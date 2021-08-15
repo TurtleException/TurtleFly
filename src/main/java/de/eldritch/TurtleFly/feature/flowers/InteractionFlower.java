@@ -48,9 +48,9 @@ public class InteractionFlower implements Callable {
             }
 
             Objects.requireNonNull(((Player)entity).getPlayer()).getInventory().setHelmet(new ItemStack(player.getInventory().getItem(slot).getType(), 1));
-        } catch (NullPointerException var5) {
+        } catch (NullPointerException e) {
             Plugin.getPlugin().getLogger().warning("This should not have happened. Somehow you reached code which is not designed to be reached. (Somehow a player has no inventory)");
-            var5.printStackTrace();
+            e.printStackTrace();
         }
 
         int amount = player.getInventory().getItem(slot).getAmount();

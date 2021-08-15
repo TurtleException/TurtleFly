@@ -43,8 +43,8 @@ public class InteractionWolf implements Callable {
                 if (Objects.requireNonNull(wolf.getOwner()).getUniqueId().equals(player.getUniqueId())) {
                     return;
                 }
-            } catch (NullPointerException var7) {
-                var7.printStackTrace();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
 
             wolf.setOwner(player);
