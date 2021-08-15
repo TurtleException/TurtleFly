@@ -9,12 +9,10 @@ public class Plugin extends JavaPlugin {
 
     private final CallManager callManager = new CallManager();
 
-    public Plugin() {
-        plugin = this;
-    }
-
     @Override
     public void onEnable() {
+        plugin = this;
+
         this.getServer().getPluginManager().registerEvents(new ListenerPlayerInteractEntity(), this);
     }
 

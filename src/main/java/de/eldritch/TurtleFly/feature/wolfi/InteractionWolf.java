@@ -3,7 +3,6 @@ package de.eldritch.TurtleFly.feature.wolfi;
 import de.eldritch.TurtleFly.feature.Callable;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
