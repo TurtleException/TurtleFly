@@ -6,7 +6,7 @@
 
     <groupId>de.eldritch.TurtleFly</groupId>
     <artifactId>Plugin</artifactId>
-    <version>01.01-001</version>
+    <version>01.01-002</version>
 
     <build>
 
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
