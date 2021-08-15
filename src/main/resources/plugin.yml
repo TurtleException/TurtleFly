@@ -1,0 +1,10 @@
+name: ${project.artifactId}
+main: ${project.groupId}.${project.artifactId}
+version: ${project.version}
+
+api-version: 1.17
+
+description: <3
+
+author: TurtleException
+website: https://eldritch.de
