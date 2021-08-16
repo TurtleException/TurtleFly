@@ -1,5 +1,6 @@
 package de.eldritch.TurtleFly;
 
+import de.eldritch.TurtleFly.commands.CommandTurtleFly;
 import de.eldritch.TurtleFly.feature.CallManager;
 import de.eldritch.TurtleFly.listeners.ListenerPlayerInteractEntity;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,6 +15,8 @@ public class Plugin extends JavaPlugin {
         plugin = this;
 
         this.getServer().getPluginManager().registerEvents(new ListenerPlayerInteractEntity(), this);
+
+        this.getCommand("turtlefly").setExecutor(new CommandTurtleFly());
     }
 
     @Override

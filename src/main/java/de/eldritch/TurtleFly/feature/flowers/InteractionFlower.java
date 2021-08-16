@@ -4,6 +4,7 @@ import de.eldritch.TurtleFly.Plugin;
 import de.eldritch.TurtleFly.feature.Callable;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -32,6 +33,14 @@ public class InteractionFlower implements Callable {
                 this.onInteraction(player, entity, slot);
             }
         }
+    }
+
+    /**
+     * @see Callable#onCommand(CommandSender, String[])
+     */
+    public boolean onCommand(CommandSender sender, String[] args) {
+        // no commands for this feature
+        return false;
     }
 
     /**

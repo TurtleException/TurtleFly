@@ -1,9 +1,11 @@
 package de.eldritch.TurtleFly.feature.boop;
 
+import de.eldritch.TurtleFly.commands.CommandTurtleFly;
 import de.eldritch.TurtleFly.feature.Callable;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Particle;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -23,6 +25,14 @@ public class InteractionBoop implements Callable {
         if (event.getPlayer().getInventory().getItem(event.getHand()).getType().isAir()) {
             this.onInteraction(event.getRightClicked());
         }
+    }
+
+    /**
+     * @see Callable#onCommand(CommandSender, String[])
+     */
+    public boolean onCommand(CommandSender sender, String[] args) {
+        // no commands for this feature
+        return false;
     }
 
     /**

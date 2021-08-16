@@ -8,3 +8,8 @@ description: <3
 
 author: TurtleException
 website: https://eldritch.de
+
+commands:
+  turtlefly:
+    description: All TurtleFly commands
+    usage: /turtlefly <feature> <args>

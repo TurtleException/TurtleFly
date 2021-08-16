@@ -3,6 +3,7 @@ package de.eldritch.TurtleFly.feature.wolfi;
 import de.eldritch.TurtleFly.feature.Callable;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
@@ -29,6 +30,14 @@ public class InteractionWolf implements Callable {
         if (player.getInventory().getItem(event.getHand()).getType().isAir())
             if (entity instanceof Wolf)
                 this.onInteract(player, (Wolf) entity);
+    }
+
+    /**
+     * @see Callable#onCommand(CommandSender, String[])
+     */
+    public boolean onCommand(CommandSender sender, String[] args) {
+        // no commands for this feature
+        return false;
     }
 
     /**
