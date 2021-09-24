@@ -5,7 +5,6 @@ import de.eldritch.TurtleFly.module.click.ClickModule;
 import de.eldritch.TurtleFly.module.compass.CompassModule;
 import de.eldritch.TurtleFly.module.helmet.HelmetModule;
 import de.eldritch.TurtleFly.module.pets.PetsModule;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -47,12 +46,19 @@ public class ModuleManager {
                 obj = clazz.getConstructor(paramTypes).newInstance(params);
 
                 // add to set
-                if (modules.add(obj))
+                if (modules.add(obj)) // stop if another object of this module has already been registered
                     throw new PluginModuleEnableException(clazz.getSimpleName() + " already exists.");
                 Plugin.getPlugin().getLogger().info("Registered " + clazz.getSimpleName() + ".");
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException | PluginModuleEnableException e) {
                 Plugin.getPlugin().getLogger().log(Level.WARNING, "Unable to instantiate " + clazz.getSimpleName() + ". It will be ignored.", e);
             }
         });
+    }
+
+    /**
+     * @return Set of all currently registered modules.
+     */
+    public HashSet<PluginModule> getRegisteredModules() {
+        return this.modules;
     }
 }

@@ -1,6 +1,7 @@
 package de.eldritch.TurtleFly;
 
 import de.eldritch.TurtleFly.module.ModuleManager;
+import de.eldritch.TurtleFly.module.PluginModule;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Plugin extends JavaPlugin {
@@ -18,7 +19,8 @@ public class Plugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        // save module YAML configs
+        moduleManager.getRegisteredModules().forEach(PluginModule::saveConfig);
     }
 
 
