@@ -58,4 +58,8 @@ public abstract class PluginModule {
             Plugin.getPlugin().getLogger().log(Level.WARNING, "Unable to save config file for module '" + moduleName + "'.", e);
         }
     }
+
+    public YamlConfiguration getConfig() {
+        return CONFIG;
+    }
 }
