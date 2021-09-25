@@ -34,7 +34,7 @@ public class ClickModule extends PluginModule {
         }, Plugin.getPlugin());
     }
 
-    public void onClick(Player source, Entity target) {
+    private void onClick(Player source, Entity target) {
         String message = getConfig().getString(source.getUniqueId() + "." + target.getUniqueId() + ".message", null);
         Particle particle = getConfig().getObject(source.getUniqueId() + "." + target.getUniqueId() + ".particle", Particle.class, null);
 
