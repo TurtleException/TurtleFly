@@ -18,6 +18,8 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 public class ClickModule extends PluginModule {
     public ClickModule() throws PluginModuleEnableException {
         super();
+
+        this.registerListeners();
     }
 
 
