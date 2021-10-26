@@ -38,12 +38,7 @@ public class SyncModule extends PluginModule {
      * Passes a Discord message to Minecraft.
      */
     public void process(DiscordMessage msg) {
-        try {
-            Bukkit.getScheduler().callSyncMethod( TurtleFly.getPlugin(),
-                    () -> Bukkit.dispatchCommand(TurtleFly.getPlugin().getServer().getConsoleSender(), msg.toMinecraft())).get();
-        } catch (InterruptedException | ExecutionException e) {
-            TurtleFly.getPlugin().getLogger().warning("Unable to send Minecraft message '" + msg.toMinecraft() + "'.");
-        }
+        TurtleFly.getPlugin().getServer().spigot().broadcast(msg.toMinecraft());
     }
 
     /**

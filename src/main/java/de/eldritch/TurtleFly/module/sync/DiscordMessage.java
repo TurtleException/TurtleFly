@@ -2,6 +2,11 @@ package de.eldritch.TurtleFly.module.sync;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class DiscordMessage {
     private Message message;
@@ -16,30 +21,21 @@ public class DiscordMessage {
      * Formats the message to be compatible with
      * the Minecraft chat.
      */
-    public String toMinecraft() {
-        String authorColor;
-        if (author.getUser().isBot() || author.getUser().isSystem())
-            authorColor = "gray";
-        else
-            authorColor = "aqua";
+    public TextComponent toMinecraft() {
+        TextComponent name = new TextComponent(
+                (author.getUser().isBot() || author.getUser().isSystem() ? ChatColor.GRAY : ChatColor.AQUA)
+                + ((author.getNickname() != null) ? author.getNickname() : author.getUser().getName())
+                + ChatColor.DARK_GRAY + ": " );
+        name.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(
+                ((author.getColor() != null) ? ChatColor.of(author.getColor()) : ChatColor.AQUA) + author.getEffectiveName() + author.getUser().getDiscriminator()
+        )));
 
-        String hoverText;
-        if (author.getColor() != null)
-            hoverText = "{\"text\":\"" + author.getEffectiveName() + "\",\"color\":\"#" + String.format("#%02X%02X%02X", author.getColor().getRed(), author.getColor().getGreen(), author.getColor().getBlue()) + "\"}";
-        else
-            hoverText = "{\"text\":\"" + author.getEffectiveName() + "\",\"color\":\"aqua\"}";
+        // stripped content for now as markdown is not supported
+        TextComponent content = new TextComponent(" " + ChatColor.GRAY + message.getContentStripped());
+        content.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "@" + message.getId() + " "));
+        content.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("" + ChatColor.ITALIC + ChatColor.GRAY + "Klicke zum antworten.")));
 
-        String content = message.getContentRaw();
-        content = this.replaceMarkdown(content);
-        content = this.replaceEmotes(content);
-
-        String responsePrefix = "@" + message.getId() + " ";
-
-        return "tellraw @a [\"\",{\"text\":\""
-                + author.getNickname() + "\",\"bold\":true,\"color\":\""
-                + authorColor + "\",\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\""
-                + hoverText + "\"}},{\"text\":\": \\u0020\",\"color\":\"dark_gray\"},{\"text\":\""
-                + content + "\",\"color\":\"gray\",\"insertion\":\"" + responsePrefix + "\"}]";
+        return new TextComponent(name, content);
     }
 
     /**

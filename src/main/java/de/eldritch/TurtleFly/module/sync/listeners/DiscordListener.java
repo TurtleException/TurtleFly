@@ -18,7 +18,7 @@ public class DiscordListener extends ListenerAdapter {
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
         if (event.getAuthor().equals(event.getJDA().getSelfUser())) return; // abort if event was self-triggered
 
-        TurtleFly.getPlugin().getLogger().info("[DISCORD] " + event.getAuthor().getDiscriminator() + ":  " + event.getMessage().getContentRaw());
+        TurtleFly.getPlugin().getLogger().info("[DISCORD] " + event.getAuthor().getName() + ":  " + event.getMessage().getContentRaw());
 
         DiscordMessage discordMessage = new DiscordMessage(event.getMessage(), event.getMember());
         module.process(discordMessage);
