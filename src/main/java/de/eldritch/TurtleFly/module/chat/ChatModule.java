@@ -34,9 +34,23 @@ public class ChatModule extends PluginModule {
 
     public void process(MinecraftMessage msg) {
         if (Plugin.getPlugin().getDiscordAPI() != null) {
-            // TODO: handle response prefix
+            String msgStripped = msg.toDiscord();
 
-            Plugin.getPlugin().getDiscordAPI().getMainTextChannel().sendMessage(msg.toDiscord()).queue();
+            if (msgStripped.startsWith("@")) {
+                String[] tokens = msgStripped.split(" ");
+                if (tokens.length > 0) {
+                    String responseTarget = tokens[0].substring(1);
+                    try {
+                        // get target message and create replay
+                        Objects.requireNonNull(Plugin.getPlugin().getDiscordAPI().getMainTextChannel().getHistory().getMessageById(responseTarget)).reply(msgStripped.substring(tokens[0].length() + "@ ".length())).queue();
+                        return; // prevent the message from being sent seperately
+                    } catch (NullPointerException e) {
+                        Plugin.getPlugin().getLogger().warning("Unable to send discord message '" + msg.toDiscord() + "' as reply.");
+                    }
+                }
+            }
+
+            Plugin.getPlugin().getDiscordAPI().getMainTextChannel().sendMessage(msgStripped).queue();
         } else {
             Plugin.getPlugin().getLogger().warning("Unable to send discord message '" + msg.toDiscord() + "'.");
         }
