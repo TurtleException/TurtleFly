@@ -1,6 +1,6 @@
 package de.eldritch.TurtleFly.module.click;
 
-import de.eldritch.TurtleFly.Plugin;
+import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import net.md_5.bungee.api.ChatMessageType;
@@ -24,14 +24,14 @@ public class ClickModule extends PluginModule {
 
 
     private void registerListeners() {
-        Plugin.getPlugin().getServer().getPluginManager().registerEvents(new Listener() {
+        TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void onEvent(PlayerInteractEntityEvent event) {
                 if (event.getPlayer().getInventory().getItem(event.getHand()).getType().isAir()) {
                     onClick(event.getPlayer(), event.getRightClicked());
                 }
             }
-        }, Plugin.getPlugin());
+        }, TurtleFly.getPlugin());
     }
 
     private void onClick(Player source, Entity target) {

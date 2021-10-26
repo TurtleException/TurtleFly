@@ -1,6 +1,6 @@
 package de.eldritch.TurtleFly.module.chat;
 
-import de.eldritch.TurtleFly.Plugin;
+import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import de.eldritch.TurtleFly.module.chat.listeners.DiscordListener;
@@ -24,10 +24,10 @@ public class ChatModule extends PluginModule {
 
     private void registerListeners() throws NullPointerException {
         // minecraft listener
-        Plugin.getPlugin().getServer().getPluginManager().registerEvents(new MinecraftListener(this), Plugin.getPlugin());
+        TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new MinecraftListener(this), TurtleFly.getPlugin());
 
         // discord listener
-        Objects.requireNonNull(Plugin.getPlugin().getDiscordAPI()).getJDA().addEventListener(new DiscordListener(this));
+        Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI()).getJDA().addEventListener(new DiscordListener(this));
     }
 
 
@@ -35,14 +35,14 @@ public class ChatModule extends PluginModule {
      * Passes a Discord message to Minecraft.
      */
     public void process(DiscordMessage msg) {
-        Plugin.getPlugin().getServer().dispatchCommand(Plugin.getPlugin().getServer().getConsoleSender(), msg.toMinecraft());
+        TurtleFly.getPlugin().getServer().dispatchCommand(TurtleFly.getPlugin().getServer().getConsoleSender(), msg.toMinecraft());
     }
 
     /**
      * Passes a Minecraft message to Discord.
      */
     public void process(MinecraftMessage msg) {
-        if (Plugin.getPlugin().getDiscordAPI() != null) {
+        if (TurtleFly.getPlugin().getDiscordAPI() != null) {
             String msgStripped = msg.toDiscord();
 
             if (msgStripped.startsWith("@")) {
@@ -51,17 +51,17 @@ public class ChatModule extends PluginModule {
                     String responseTarget = tokens[0].substring(1);
                     try {
                         // get target message and create replay
-                        Objects.requireNonNull(Plugin.getPlugin().getDiscordAPI().getMainTextChannel().getHistory().getMessageById(responseTarget)).reply(msgStripped.substring(tokens[0].length() + "@ ".length())).queue();
+                        Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().getHistory().getMessageById(responseTarget)).reply(msgStripped.substring(tokens[0].length() + "@ ".length())).queue();
                         return; // prevent the message from being sent seperately
                     } catch (NullPointerException e) {
-                        Plugin.getPlugin().getLogger().warning("Unable to send discord message '" + msg.toDiscord() + "' as reply.");
+                        TurtleFly.getPlugin().getLogger().warning("Unable to send discord message '" + msg.toDiscord() + "' as reply.");
                     }
                 }
             }
 
-            Plugin.getPlugin().getDiscordAPI().getMainTextChannel().sendMessage(msgStripped).queue();
+            TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().sendMessage(msgStripped).queue();
         } else {
-            Plugin.getPlugin().getLogger().warning("Unable to send discord message '" + msg.toDiscord() + "'.");
+            TurtleFly.getPlugin().getLogger().warning("Unable to send discord message '" + msg.toDiscord() + "'.");
         }
     }
 }

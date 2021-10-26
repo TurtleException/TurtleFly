@@ -7,10 +7,12 @@ import de.eldritch.TurtleFly.module.PluginModule;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 
-public class Plugin extends JavaPlugin {
-    private static Plugin singleton;
+public class TurtleFly extends JavaPlugin {
+    private static TurtleFly singleton;
 
     private DiscordAPI discordAPI;
 
@@ -20,6 +22,17 @@ public class Plugin extends JavaPlugin {
     @Override
     public void onEnable() {
         singleton = this;
+
+
+        // idk why spigot doesn't do that
+        if (!getDataFolder().exists()) getDataFolder().mkdir();
+        try {
+            new File(getDataFolder(), "config.yml").createNewFile();
+            new File(getDataFolder(), "modules").mkdir();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         try {
             discordAPI = new DiscordAPI();
@@ -48,7 +61,7 @@ public class Plugin extends JavaPlugin {
     /**
      * @return Plugin singleton.
      */
-    public static Plugin getPlugin() {
+    public static TurtleFly getPlugin() {
         return singleton;
     }
 }

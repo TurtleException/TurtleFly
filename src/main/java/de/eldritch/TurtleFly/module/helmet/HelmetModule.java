@@ -1,6 +1,6 @@
 package de.eldritch.TurtleFly.module.helmet;
 
-import de.eldritch.TurtleFly.Plugin;
+import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import org.bukkit.entity.Player;
@@ -25,7 +25,7 @@ public class HelmetModule extends PluginModule {
 
 
     private void registerListeners() {
-        Plugin.getPlugin().getServer().getPluginManager().registerEvents(new Listener() {
+        TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void onEvent(PlayerInteractEntityEvent event) {
                 if (event.getRightClicked() instanceof Player
@@ -33,7 +33,7 @@ public class HelmetModule extends PluginModule {
                     onClick(event.getPlayer(), (Player) event.getRightClicked(), event.getHand());
                 }
             }
-        }, Plugin.getPlugin());
+        }, TurtleFly.getPlugin());
     }
 
     public void onClick(Player source, Player target, EquipmentSlot slot) {

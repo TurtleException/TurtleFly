@@ -1,6 +1,6 @@
 package de.eldritch.TurtleFly.module;
 
-import de.eldritch.TurtleFly.Plugin;
+import de.eldritch.TurtleFly.TurtleFly;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -18,12 +18,12 @@ public abstract class PluginModule {
 
     // assign FILE
     {
-        FILE = new File(Plugin.getPlugin().getDataFolder().getPath() + File.separator + moduleName + ".yml");
+        FILE = new File(TurtleFly.getPlugin().getDataFolder().getPath() + File.separator + "modules" + File.separator + moduleName + ".yml");
         if (!FILE.exists()) {
-            Plugin.getPlugin().getLogger().info("Module '" + moduleName + "' config does not exist. Creating new file...");
+            TurtleFly.getPlugin().getLogger().info("Module '" + moduleName + "' config does not exist. Creating new file...");
             try {
                 if (FILE.createNewFile())
-                    Plugin.getPlugin().getLogger().info("File created!");
+                    TurtleFly.getPlugin().getLogger().info("File created!");
             } catch (IOException e) {
                 throw new PluginModuleEnableException("Unable to create module config file!", e);
             }
@@ -55,7 +55,7 @@ public abstract class PluginModule {
         try {
             CONFIG.save(FILE);
         } catch (IOException e) {
-            Plugin.getPlugin().getLogger().log(Level.WARNING, "Unable to save config file for module '" + moduleName + "'.", e);
+            TurtleFly.getPlugin().getLogger().log(Level.WARNING, "Unable to save config file for module '" + moduleName + "'.", e);
         }
     }
 

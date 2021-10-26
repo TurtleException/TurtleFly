@@ -1,9 +1,8 @@
 package de.eldritch.TurtleFly.module;
 
-import de.eldritch.TurtleFly.Plugin;
+import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.chat.ChatModule;
 import de.eldritch.TurtleFly.module.click.ClickModule;
-import de.eldritch.TurtleFly.module.compass.CompassModule;
 import de.eldritch.TurtleFly.module.helmet.HelmetModule;
 import de.eldritch.TurtleFly.module.pets.PetsModule;
 
@@ -28,7 +27,7 @@ public class ModuleManager {
     public void registerModules() {
         HashMap<Class<? extends PluginModule>, Object[]> modClasses = new HashMap<>();
 
-        /*  !!! UPDATE THIS PART !!!  */
+        /*  !!! KEEP THIS PART UPDATED !!!  */
         modClasses.put(ChatModule.class, new Object[]{});
         modClasses.put(ClickModule.class, new Object[]{});
         // modClasses.put(CompassModule.class, new Object[]{});
@@ -48,11 +47,11 @@ public class ModuleManager {
                 obj = clazz.getConstructor(paramTypes).newInstance(params);
 
                 // add to set
-                if (modules.add(obj)) // stop if another object of this module has already been registered
+                if (!modules.add(obj)) // stop if another object of this module has already been registered
                     throw new PluginModuleEnableException(clazz.getSimpleName() + " already exists.");
-                Plugin.getPlugin().getLogger().info("Registered " + clazz.getSimpleName() + ".");
+                TurtleFly.getPlugin().getLogger().info("Registered " + clazz.getSimpleName() + ".");
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException | PluginModuleEnableException e) {
-                Plugin.getPlugin().getLogger().log(Level.WARNING, "Unable to instantiate " + clazz.getSimpleName() + ". It will be ignored.", e);
+                TurtleFly.getPlugin().getLogger().log(Level.WARNING, "Unable to instantiate " + clazz.getSimpleName() + ". It will be ignored.", e);
             }
         });
     }

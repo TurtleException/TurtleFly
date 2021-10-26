@@ -1,6 +1,6 @@
 package de.eldritch.TurtleFly.module.pets;
 
-import de.eldritch.TurtleFly.Plugin;
+import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import org.bukkit.entity.Player;
@@ -20,14 +20,14 @@ public class PetsModule extends PluginModule {
     }
 
     private void registerListeners() {
-        Plugin.getPlugin().getServer().getPluginManager().registerEvents(new Listener() {
+        TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void onEvent(PlayerInteractAtEntityEvent event) {
                 if (event.getRightClicked() instanceof Tameable) {
                     onClick(event.getPlayer(), (Tameable) event.getRightClicked());
                 }
             }
-        }, Plugin.getPlugin());
+        }, TurtleFly.getPlugin());
     }
 
     public void onClick(Player source, Tameable pet) {

@@ -1,6 +1,6 @@
 package de.eldritch.TurtleFly.module.compass;
 
-import de.eldritch.TurtleFly.Plugin;
+import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import org.bukkit.Material;
@@ -22,7 +22,7 @@ public class CompassModule extends PluginModule {
 
 
     private void registerListeners() {
-        Plugin.getPlugin().getServer().getPluginManager().registerEvents(new Listener() {
+        TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void onEvent(PlayerInteractEntityEvent event) {
                 if (event.getPlayer().getInventory().getItem(event.getHand()).getType().equals(Material.COMPASS)
@@ -30,7 +30,7 @@ public class CompassModule extends PluginModule {
                     onClick(event.getPlayer(), (Player) event.getRightClicked());
                 }
             }
-        }, Plugin.getPlugin());
+        }, TurtleFly.getPlugin());
 
         // TODO: remove link on compass use
         // (possible solution: temp value of previous location)
@@ -44,7 +44,7 @@ public class CompassModule extends PluginModule {
                 source.setCompassTarget(target.getLocation());
             }
         };
-        int taskId = Plugin.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(Plugin.getPlugin(), runnable, 0, 10);
+        int taskId = TurtleFly.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(TurtleFly.getPlugin(), runnable, 0, 10);
 
         getConfig().set(target.getUniqueId() + ".target", target.getUniqueId());
         getConfig().set(target.getUniqueId() + ".id", taskId);
@@ -58,7 +58,7 @@ public class CompassModule extends PluginModule {
     private void cancelRunnable(Player player) {
         if (getConfig().contains(player.getUniqueId().toString())) {
             int taskId = getConfig().getInt(player.getUniqueId() + ".id");
-            Plugin.getPlugin().getServer().getScheduler().cancelTask(taskId);
+            TurtleFly.getPlugin().getServer().getScheduler().cancelTask(taskId);
 
             /*
             The former config does not have to be removed as this method is exclusively
@@ -75,7 +75,7 @@ public class CompassModule extends PluginModule {
     private boolean removeLink(Player player) {
         if (getConfig().contains(player.getUniqueId().toString())) {
             int taskId = getConfig().getInt(player.getUniqueId() + ".id");
-            Plugin.getPlugin().getServer().getScheduler().cancelTask(taskId);
+            TurtleFly.getPlugin().getServer().getScheduler().cancelTask(taskId);
 
             getConfig().set(player.getUniqueId().toString(), null);
 
