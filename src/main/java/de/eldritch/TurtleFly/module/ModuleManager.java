@@ -1,6 +1,7 @@
 package de.eldritch.TurtleFly.module;
 
 import de.eldritch.TurtleFly.Plugin;
+import de.eldritch.TurtleFly.module.chat.ChatModule;
 import de.eldritch.TurtleFly.module.click.ClickModule;
 import de.eldritch.TurtleFly.module.compass.CompassModule;
 import de.eldritch.TurtleFly.module.helmet.HelmetModule;
@@ -28,8 +29,9 @@ public class ModuleManager {
         HashMap<Class<? extends PluginModule>, Object[]> modClasses = new HashMap<>();
 
         /*  !!! UPDATE THIS PART !!!  */
+        modClasses.put(ChatModule.class, new Object[]{});
         modClasses.put(ClickModule.class, new Object[]{});
-        modClasses.put(CompassModule.class, new Object[]{});
+        // modClasses.put(CompassModule.class, new Object[]{});
         modClasses.put(HelmetModule.class, new Object[]{});
         modClasses.put(PetsModule.class, new Object[]{});
         /* !!! - - - !!!  */
