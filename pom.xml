@@ -8,6 +8,13 @@
     <artifactId>Plugin</artifactId>
     <version>02.01-001</version>
 
+    <!--
+         ,,
+        (_ \_- -_
+          \  EXC )
+            lU lU
+    -->
+
     <build>
 
         <resources>
