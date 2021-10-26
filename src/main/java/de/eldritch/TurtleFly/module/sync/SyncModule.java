@@ -5,8 +5,11 @@ import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import de.eldritch.TurtleFly.module.sync.listeners.DiscordListener;
 import de.eldritch.TurtleFly.module.sync.listeners.MinecraftListener;
+import org.bukkit.Bukkit;
 
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Mirrors the Minecraft chat with Discord and provides custom formatting.
@@ -35,7 +38,12 @@ public class SyncModule extends PluginModule {
      * Passes a Discord message to Minecraft.
      */
     public void process(DiscordMessage msg) {
-        TurtleFly.getPlugin().getServer().dispatchCommand(TurtleFly.getPlugin().getServer().getConsoleSender(), msg.toMinecraft());
+        try {
+            Bukkit.getScheduler().callSyncMethod( TurtleFly.getPlugin(),
+                    () -> Bukkit.dispatchCommand(TurtleFly.getPlugin().getServer().getConsoleSender(), msg.toMinecraft())).get();
+        } catch (InterruptedException | ExecutionException e) {
+            TurtleFly.getPlugin().getLogger().warning("Unable to send Minecraft message '" + msg.toMinecraft() + "'.");
+        }
     }
 
     /**
@@ -61,7 +69,7 @@ public class SyncModule extends PluginModule {
 
             TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().sendMessage(msgStripped).queue();
         } else {
-            TurtleFly.getPlugin().getLogger().warning("Unable to send discord message '" + msg.toDiscord() + "'.");
+            TurtleFly.getPlugin().getLogger().warning("Unable to send Discord message '" + msg.toDiscord() + "'.");
         }
     }
 }

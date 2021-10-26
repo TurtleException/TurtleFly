@@ -17,7 +17,8 @@ public class DiscordAPI {
     public DiscordAPI() throws DiscordConnectionException {
         try {
             // instantiate JDA
-            API = JDABuilder.createDefault(TurtleFly.getPlugin().getConfig().getString("discord.token")).build();
+            API = JDABuilder.createDefault(TurtleFly.getPlugin().getConfig().getString("discord.token", "null")).build();
+            API.awaitReady();
 
             // assign constants
             GUILD = API.getGuildById(Objects.requireNonNull(TurtleFly.getPlugin().getConfig().getString("discord.guild")));
