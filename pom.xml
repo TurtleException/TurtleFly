@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.eldritch.TurtleFly</groupId>
-    <artifactId>Plugin</artifactId>
-    <version>02.01-001</version>
+    <artifactId>TurtleFly</artifactId>
+    <version>02.01-008</version>
 
     <!--
          ,,

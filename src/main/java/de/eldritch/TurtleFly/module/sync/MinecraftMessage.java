@@ -1,4 +1,4 @@
-package de.eldritch.TurtleFly.module.chat;
+package de.eldritch.TurtleFly.module.sync;
 
 import org.bukkit.entity.Player;
 

@@ -1,4 +1,4 @@
-package de.eldritch.TurtleFly.module.chat;
+package de.eldritch.TurtleFly.module.sync;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;

@@ -1,15 +1,15 @@
-package de.eldritch.TurtleFly.module.chat.listeners;
+package de.eldritch.TurtleFly.module.sync.listeners;
 
-import de.eldritch.TurtleFly.module.chat.ChatModule;
-import de.eldritch.TurtleFly.module.chat.DiscordMessage;
+import de.eldritch.TurtleFly.module.sync.SyncModule;
+import de.eldritch.TurtleFly.module.sync.DiscordMessage;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 public class DiscordListener extends ListenerAdapter {
-    private ChatModule module;
+    private SyncModule module;
 
-    public DiscordListener(ChatModule module) {
+    public DiscordListener(SyncModule module) {
         this.module = module;
     }
 
