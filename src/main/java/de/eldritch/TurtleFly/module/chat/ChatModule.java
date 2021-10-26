@@ -8,6 +8,9 @@ import de.eldritch.TurtleFly.module.chat.listeners.MinecraftListener;
 
 import java.util.Objects;
 
+/**
+ * Mirrors the Minecraft chat with Discord and provides custom formatting.
+ */
 public class ChatModule extends PluginModule {
     public ChatModule() throws PluginModuleEnableException {
         super();
@@ -28,10 +31,16 @@ public class ChatModule extends PluginModule {
     }
 
 
+    /**
+     * Passes a Discord message to Minecraft.
+     */
     public void process(DiscordMessage msg) {
         Plugin.getPlugin().getServer().dispatchCommand(Plugin.getPlugin().getServer().getConsoleSender(), msg.toMinecraft());
     }
 
+    /**
+     * Passes a Minecraft message to Discord.
+     */
     public void process(MinecraftMessage msg) {
         if (Plugin.getPlugin().getDiscordAPI() != null) {
             String msgStripped = msg.toDiscord();
