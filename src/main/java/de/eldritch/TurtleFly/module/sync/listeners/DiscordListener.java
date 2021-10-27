@@ -16,6 +16,7 @@ public class DiscordListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
+        if (event.getChannel().getId().equals(module.getConfig().getString("discord.mainTextChannel"))) return; // abort if message is from another channel
         if (event.getAuthor().equals(event.getJDA().getSelfUser())) return; // abort if event was self-triggered
 
         TurtleFly.getPlugin().getLogger().info("[DISCORD] " + event.getAuthor().getName() + ":  " + event.getMessage().getContentRaw());

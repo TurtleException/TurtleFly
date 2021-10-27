@@ -31,6 +31,8 @@ public class SleepModule extends PluginModule {
         if ((sleepingPlayers.size() >= (world.getPlayers().size() + 1) / 2) && (world.getTime() < 12000)) {
             world.setFullTime(1000);
             sleepingPlayers.clear();
+
+            TurtleFly.getPlugin().getLogger().info("Skipped a night (at least 1/2 of all players were sleeping).");
         }
     }
 }

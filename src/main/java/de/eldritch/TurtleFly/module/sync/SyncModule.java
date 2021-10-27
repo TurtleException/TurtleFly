@@ -49,10 +49,11 @@ public class SyncModule extends PluginModule {
             if (msg.getReplyTarget() != null) {
                 try {
                     // get target message and create replay
-                    Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().getHistory().getMessageById(msg.getReplyTarget())).reply(msg.toDiscord()).queue();
+                    Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().retrieveMessageById(msg.getReplyTarget())).complete().reply(msg.toDiscord()).queue();
                     return; // prevent the message from being sent seperately
                 } catch (NullPointerException e) {
                     TurtleFly.getPlugin().getLogger().warning("Unable to send discord message '" + msg.toDiscord() + "' as reply.");
+                    e.printStackTrace();
                 }
             }
 
