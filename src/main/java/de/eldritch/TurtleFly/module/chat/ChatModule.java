@@ -20,6 +20,17 @@ public class ChatModule extends PluginModule implements Listener {
      */
     @EventHandler
     public void onPlayerChatEvent(AsyncPlayerChatEvent event) {
-        event.setFormat(ChatColor.YELLOW + event.getPlayer().getDisplayName() + ChatColor.DARK_GRAY + ":  " + ChatColor.GRAY + event.getMessage());
+        // remove '@' reply prefix
+        if (event.getMessage().startsWith("@")) {
+            String[] tokens = event.getMessage().split(" ");
+            try {
+                Long.parseLong(tokens[0].substring(1));
+
+                // remove prefix from message
+                event.setMessage(event.getMessage().substring(tokens[0].length() + " ".length()));
+            } catch (NumberFormatException ignored) {}
+        }
+
+        event.setFormat(ChatColor.GOLD + event.getPlayer().getDisplayName() + ChatColor.DARK_GRAY + ":  " + ChatColor.GRAY + event.getMessage());
     }
 }
