@@ -46,23 +46,17 @@ public class SyncModule extends PluginModule {
      */
     public void process(MinecraftMessage msg) {
         if (TurtleFly.getPlugin().getDiscordAPI() != null) {
-            String msgStripped = msg.toDiscord();
-
-            if (msgStripped.startsWith("@")) {
-                String[] tokens = msgStripped.split(" ");
-                if (tokens.length > 0) {
-                    String responseTarget = tokens[0].substring(1);
-                    try {
-                        // get target message and create replay
-                        Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().getHistory().getMessageById(responseTarget)).reply(msgStripped.substring(tokens[0].length() + "@ ".length())).queue();
-                        return; // prevent the message from being sent seperately
-                    } catch (NullPointerException e) {
-                        TurtleFly.getPlugin().getLogger().warning("Unable to send discord message '" + msg.toDiscord() + "' as reply.");
-                    }
+            if (msg.getReplyTarget() != null) {
+                try {
+                    // get target message and create replay
+                    Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().getHistory().getMessageById(msg.getReplyTarget())).reply(msg.toDiscord()).queue();
+                    return; // prevent the message from being sent seperately
+                } catch (NullPointerException e) {
+                    TurtleFly.getPlugin().getLogger().warning("Unable to send discord message '" + msg.toDiscord() + "' as reply.");
                 }
             }
 
-            TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().sendMessage(msgStripped).queue();
+            TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().sendMessage(msg.toDiscord()).queue();
         } else {
             TurtleFly.getPlugin().getLogger().warning("Unable to send Discord message '" + msg.toDiscord() + "'.");
         }
