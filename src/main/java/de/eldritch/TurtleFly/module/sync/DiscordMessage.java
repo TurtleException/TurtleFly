@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
@@ -35,7 +36,21 @@ public class DiscordMessage {
         content.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "@" + message.getId() + " "));
         content.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("" + ChatColor.ITALIC + ChatColor.GRAY + "Klicke zum antworten.")));
 
-        return new TextComponent(name, content);
+        ComponentBuilder attachments = new ComponentBuilder();
+        if (!message.getAttachments().isEmpty()) {
+            attachments.color(ChatColor.DARK_GRAY);
+        }
+        if (message.getAttachments().stream().anyMatch(Message.Attachment::isImage)) {
+            attachments.append(" [IMG]");
+        }
+        if (message.getAttachments().stream().anyMatch(Message.Attachment::isVideo)) {
+            attachments.append(" [VID]");
+        }
+        if (message.getAttachments().stream().anyMatch(attachment -> !(attachment.isImage() || attachment.isVideo()))) {
+            attachments.append(" [FILE]");
+        }
+
+        return new TextComponent(name, content, new TextComponent(attachments.create()));
     }
 
     /**
