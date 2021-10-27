@@ -1,7 +1,11 @@
 package de.eldritch.TurtleFly.module.sync;
 
+import de.eldritch.TurtleFly.TurtleFly;
+import net.dv8tion.jda.api.entities.Emote;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class MinecraftMessage {
     private String message;
@@ -28,7 +32,15 @@ public class MinecraftMessage {
      * the Discord chat.
      */
     public String toDiscord() {
-        String str = "__**" + author.getDisplayName() + "**:__  " + message;
+        String emote = "";
+        if (TurtleFly.getPlugin().getDiscordAPI() != null) {
+            List<Emote> emotes = TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().getGuild().getEmotesByName("minecraft", true);
+
+            if (!emotes.isEmpty())
+                emote = emotes.get(0).getAsMention() + " ";
+        }
+
+        String str = emote + "__**" + author.getDisplayName() + "**:__  " + message;
 
         if (str.length() >= 2000)
             str = str.substring(0, 1996) + "...";

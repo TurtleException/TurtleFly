@@ -9,6 +9,8 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 
+import java.awt.*;
+
 public class DiscordMessage {
     private Message message;
     private Member author;
@@ -24,11 +26,11 @@ public class DiscordMessage {
      */
     public TextComponent toMinecraft() {
         TextComponent name = new TextComponent(
-                (author.getUser().isBot() || author.getUser().isSystem() ? ChatColor.GRAY : ChatColor.AQUA)
+                (author.getUser().isBot() || author.getUser().isSystem() ? ChatColor.GRAY : ChatColor.BLUE)
                 + ((author.getNickname() != null) ? author.getNickname() : author.getUser().getName())
                 + ChatColor.DARK_GRAY + ": " );
         name.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(
-                ((author.getColor() != null) ? ChatColor.of(author.getColor()) : ChatColor.AQUA) + author.getEffectiveName() + author.getUser().getDiscriminator()
+                ((author.getColor() != null) ? ChatColor.of(author.getColor()) : ChatColor.BLUE) + author.getEffectiveName() + "#" + author.getUser().getDiscriminator()
         )));
 
         // stripped content for now as markdown is not supported
