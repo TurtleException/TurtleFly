@@ -6,7 +6,7 @@
 
     <groupId>de.eldritch.TurtleFly</groupId>
     <artifactId>TurtleFly</artifactId>
-    <version>02.01-024</version>
+    <version>02.01-025</version>
 
     <!--
          ,,
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.3.0_277</version>
+            <version>4.3.0_339</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
