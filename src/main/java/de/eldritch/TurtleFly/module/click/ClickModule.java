@@ -3,6 +3,7 @@ package de.eldritch.TurtleFly.module.click;
 import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Particle;
@@ -46,11 +47,11 @@ public class ClickModule extends PluginModule {
     }
 
     private void onClick(Player source, Entity target) {
-        String message = getConfig().getString(source.getUniqueId() + "." + target.getUniqueId() + ".message", null);
+        String message = getConfig().getString(source.getUniqueId() + "." + target.getUniqueId() + ".message", getConfig().getString(source.getUniqueId() + ".default.message", null));
         Particle particle = getConfig().getObject(source.getUniqueId() + "." + target.getUniqueId() + ".particle", Particle.class, getConfig().getObject(source.getUniqueId() + ".default.particle", Particle.class, Particle.NOTE));
 
         if (message != null && target instanceof Player)
-            ((Player) target).spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§c" + message));
+            ((Player) target).spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.YELLOW + message));
         target.getWorld().spawnParticle(particle, target.getLocation().add(0, 1, 0), 10, 0.5, 0.5, 0.5);
     }
 }
