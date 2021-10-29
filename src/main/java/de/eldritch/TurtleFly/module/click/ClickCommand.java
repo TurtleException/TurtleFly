@@ -53,10 +53,14 @@ public class ClickCommand implements CommandExecutor {
      * @return true if the request was handled successfully.
      */
     private boolean get(Player sender, String target) {
+        MODULE.reloadConfig();
         ComponentBuilder builder = new ComponentBuilder().color(ChatColor.YELLOW);
 
         if (target.equals("default")) {
-            Particle particle = MODULE.getConfig().getObject(sender.getUniqueId() + ".default.particle", Particle.class, null);
+            Particle particle = null;
+            try {
+                particle = Particle.valueOf(MODULE.getConfig().getString(sender.getUniqueId() + ".default.particle", null));
+            } catch (IllegalArgumentException | NullPointerException ignored) {}
             String message = MODULE.getConfig().getString(sender.getUniqueId() + ".default.message", null);
 
             if (particle == null && message == null) {
@@ -93,7 +97,10 @@ public class ClickCommand implements CommandExecutor {
             Player player = Bukkit.getPlayer(target);
             if (player == null) return false;
 
-            Particle particle = MODULE.getConfig().getObject(sender.getUniqueId() + "." + player.getUniqueId() + ".particle", Particle.class, null);
+            Particle particle = null;
+            try {
+                particle = Particle.valueOf(MODULE.getConfig().getString(sender.getUniqueId() + "." + player.getUniqueId() + ".particle", null));
+            } catch (IllegalArgumentException | NullPointerException ignored) {}
             String message = MODULE.getConfig().getString(sender.getUniqueId() + "." + player.getUniqueId() + ".message", null);
 
             if (particle == null && message == null) {
@@ -146,17 +153,19 @@ public class ClickCommand implements CommandExecutor {
     private boolean setParticle(Player sender, String target, String particleStr) {
         Particle particle;
         try {
-            particle = Particle.valueOf(particleStr);
+            particle = Particle.valueOf(particleStr.toUpperCase());
         } catch (IllegalArgumentException e) {
             return false;
         }
 
         Player player = Bukkit.getPlayer(target);
         if (player != null) {
-            MODULE.getConfig().set(sender.getUniqueId() + "." + player.getUniqueId() + ".particle", particle);
+            MODULE.getConfig().set(sender.getUniqueId() + "." + player.getUniqueId() + ".particle", particle.name());
+            MODULE.saveConfig();
             return true;
         } else if (target.equals("default")) {
-            MODULE.getConfig().set(sender.getUniqueId() + ".default.particle", particle);
+            MODULE.getConfig().set(sender.getUniqueId() + ".default.particle", particle.name());
+            MODULE.saveConfig();
             return true;
         }
         return false;
@@ -172,10 +181,12 @@ public class ClickCommand implements CommandExecutor {
     private boolean setMessage(Player sender, String target, String message) {
         Player player = Bukkit.getPlayer(target);
         if (player != null) {
-            MODULE.getConfig().set(sender.getUniqueId() + "." + player.getUniqueId() + ".particle", message);
+            MODULE.getConfig().set(sender.getUniqueId() + "." + player.getUniqueId() + ".message", message);
+            MODULE.saveConfig();
             return true;
         } else if (target.equals("default")) {
-            MODULE.getConfig().set(sender.getUniqueId() + ".default.particle", message);
+            MODULE.getConfig().set(sender.getUniqueId() + ".default.message", message);
+            MODULE.saveConfig();
             return true;
         }
         return false;

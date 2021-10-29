@@ -41,12 +41,15 @@ public class ClickModule extends PluginModule {
     private void registerCommands() {
         try {
             Objects.requireNonNull(TurtleFly.getPlugin().getCommand("click")).setExecutor(new ClickCommand(this));
+            Objects.requireNonNull(TurtleFly.getPlugin().getCommand("click")).setTabCompleter(new ClickTabCompleter());
         } catch (NullPointerException e) {
             TurtleFly.getPlugin().getLogger().warning("Unable to register command '/click'.");
         }
     }
 
     private void onClick(Player source, Entity target) {
+        reloadConfig();
+
         String message = getConfig().getString(source.getUniqueId() + "." + target.getUniqueId() + ".message", getConfig().getString(source.getUniqueId() + ".default.message", null));
         Particle particle = getConfig().getObject(source.getUniqueId() + "." + target.getUniqueId() + ".particle", Particle.class, getConfig().getObject(source.getUniqueId() + ".default.particle", Particle.class, Particle.NOTE));
 
