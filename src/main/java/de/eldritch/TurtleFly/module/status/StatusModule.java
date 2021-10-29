@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.bukkit.entity.Player;
 
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 /**
@@ -43,28 +44,39 @@ public class StatusModule extends PluginModule {
      */
     public void refresh() {
         reloadConfig();
-        EmbedBuilder builder = new EmbedBuilder();
-
-        builder.setTitle("Server Status");
-        builder.setDescription("Letztes Update: " + TimeFormat.RELATIVE.now() + ".");
-        builder.setColor(0x2ECC71);
-        builder.setFooter("TurtleFly");
+        EmbedBuilder builder = new EmbedBuilder()
+                .setTitle("Server Status")
+                .setDescription("Letztes Update: " + TimeFormat.RELATIVE.now() + ".\n"
+                        + "Der Bot versucht diese Nachricht alle 5 Sekunden zu aktualisieren."
+                        + "Da je nach Auslastung der Discord API oder des Servers einige dieser"
+                        + "Updates ausfallen könnten ist spätestens nach einer Minute damit zu"
+                        + "rechnen, dass der Server offline ist oder das Plugin nicht funktioniert.")
+                .setThumbnail(!TurtleFly.getPlugin().getServer().getName().equals("Unknown Server")
+                        ? "http://cdn.eldritch.de/mc/EldritchDiscord/" + TurtleFly.getPlugin().getServer().getName() + ".png"
+                        : "http://cdn.eldritch.de/mc/EldritchDiscord/unknown.png")
+                .setColor(0x2F3136)
+                .setFooter("turtlefly.eldritch.de")
+                .setTimestamp(new Date().toInstant());
 
         // online players (per world)
         Map<String, Collection<Player>> players = this.getOnlinePlayers();
-        players.forEach((world, players1) -> {
-            StringBuilder str = new StringBuilder();
-            players1.forEach(player -> str.append(player.getDisplayName()).append("\n"));
+        if (players.isEmpty()) {
+            builder.addField("Spieler | ?", "Keine Spieler online.", true);
+        } else {
+            players.forEach((world, players1) -> {
+                StringBuilder str = new StringBuilder();
+                players1.forEach(player -> str.append(player.getDisplayName()).append("\n"));
 
-            // check for a custom world name in the config
-            try {
-                if (Objects.requireNonNull(getConfig().getConfigurationSection("worlds")).contains(world)) {
-                    builder.addField("Spieler | " + Objects.requireNonNull(getConfig().getConfigurationSection("worlds")).get(world), str.toString(), true);
+                // check for a custom world name in the config
+                try {
+                    if (Objects.requireNonNull(getConfig().getConfigurationSection("worlds")).contains(world)) {
+                        builder.addField("Spieler | " + Objects.requireNonNull(getConfig().getConfigurationSection("worlds")).get(world), str.toString(), true);
+                    }
+                } catch (NullPointerException ignored) {
+                    builder.addField("Spieler | " + world, str.toString(), true);
                 }
-            } catch (NullPointerException ignored) {
-                builder.addField("Spieler | " + world, str.toString(), true);
-            }
-        });
+            });
+        }
 
 
         this.updateMessage(builder.build());
