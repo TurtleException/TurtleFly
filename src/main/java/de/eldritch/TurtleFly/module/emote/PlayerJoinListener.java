@@ -14,23 +14,26 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         String name = event.getPlayer().getName();
 
-        if (TurtleFly.getPlugin().getDiscordAPI() == null)
-            return;
+        TurtleFly.getPlugin().getServer().getScheduler().runTaskAsynchronously(TurtleFly.getPlugin(), () -> {
+            if (TurtleFly.getPlugin().getDiscordAPI() == null)
+                return;
 
-        // remove emote
-        for (Emote emote : TurtleFly.getPlugin().getDiscordAPI().getGuild().getEmotes())
-            if (emote.getName().equals(name)) emote.delete().complete();
+            // retrieve emote
+            byte[] emote;
+            try {
+                emote = EmoteModule.retrieveAvatar(name);
+            } catch (IOException e) {
+                TurtleFly.getPlugin().getLogger().warning("Unable to retrieve emote '" + name + "'.");
+                return;
+            }
 
-        // retrieve emote
-        byte[] emote;
-        try {
-            emote = EmoteModule.retrieveAvatar(name);
-        } catch (IOException e) {
-            TurtleFly.getPlugin().getLogger().warning("Unable to retrieve emote '" + name + "'.");
-            return;
-        }
+            // delete old emote
+            for (Emote emote1 : TurtleFly.getPlugin().getDiscordAPI().getGuild().getEmotes())
+                if (emote1.getName().equals(name)) emote1.delete().complete();
 
-        TurtleFly.getPlugin().getDiscordAPI().getGuild().createEmote(name, Icon.from(emote)).queue(
-                emote1 -> TurtleFly.getPlugin().getLogger().info("Emote '" + emote1.getName() + "' created."));
+            // create new emote
+            TurtleFly.getPlugin().getDiscordAPI().getGuild().createEmote(name, Icon.from(emote)).queue(
+                    emote1 -> TurtleFly.getPlugin().getLogger().info("Emote '" + emote1.getName() + "' created."));
+        });
     }
 }
