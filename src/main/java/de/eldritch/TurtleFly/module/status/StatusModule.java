@@ -10,6 +10,11 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -54,12 +59,20 @@ public class StatusModule extends PluginModule {
                         + "Da je nach Auslastung der *Discord API* oder des Servers einige dieser "
                         + "Updates ausfallen könnten ist spätestens nach einer Minute damit zu "
                         + "rechnen, dass der Server offline ist oder das Plugin nicht funktioniert.")
-                .setThumbnail(!TurtleFly.getPlugin().getServer().getName().equals("Unknown Server")
-                        ? "http://cdn.eldritch.de/mc/EldritchDiscord/" + TurtleFly.getPlugin().getServer().getName() + ".png"
-                        : "http://cdn.eldritch.de/mc/EldritchDiscord/unknown.png")
                 .setColor(0x2F3136)
                 .setFooter("turtlefly.eldritch.de")
                 .setTimestamp(new Date().toInstant());
+
+        // set thumbnail
+        try {
+            String url = "http://cdn.eldritch.de/mc/EldritchDiscord/" + TurtleFly.getPlugin().getServer().getName() + ".png";
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("HEAD");
+            if (connection.getResponseCode() != 200) throw new IOException();
+            builder.setThumbnail(url);
+        } catch (IOException ignored) {
+            builder.setThumbnail("http://cdn.eldritch.de/mc/EldritchDiscord/unknown.png");
+        }
 
         // online players (per world)
         Map<String, Collection<Player>> players = this.getOnlinePlayers();
@@ -87,6 +100,8 @@ public class StatusModule extends PluginModule {
                 }
             });
         }
+
+        builder.addField("Plugin Version", "`" + TurtleFly.getPlugin().getDescription().getVersion() + "`", true);
 
 
         this.updateMessage(builder.build());
