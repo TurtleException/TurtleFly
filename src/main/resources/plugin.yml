@@ -10,6 +10,6 @@ author: TurtleException
 website: https://eldritch.de
 
 commands:
-  turtlefly:
-    description: All TurtleFly commands
-    usage: /turtlefly <feature> <args>
+  click:
+    description: Ändert die Partikel für einen bestimmten Spieler oder die Standard-Einstellung für Spieler, die keine zugewiesenen Partikel haben.
+    usage: /click <Spieler/"default"> <Partikel> <Nachricht>
