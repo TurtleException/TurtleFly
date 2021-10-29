@@ -6,7 +6,7 @@
 
     <groupId>de.eldritch.TurtleFly</groupId>
     <artifactId>TurtleFly</artifactId>
-    <version>02.01-025</version>
+    <version>02.02-015</version>
 
     <!--
          ,,
@@ -16,33 +16,61 @@
     -->
 
     <build>
-
+        <plugins>
+            <plugin>
+                <!--suppress MavenModelInspection -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <!--suppress MavenModelInspection -->
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.directory}/libs
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!--suppress MavenModelInspection -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <!--suppress MavenModelInspection -->
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>libs/</classpathPrefix>
+                            <mainClass>
+                                de.eldritch.TurtleFly.TurtleFly
+                            </mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!--suppress MavenModelInspection -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <!--suppress MavenModelInspection -->
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>16</source>
+                    <target>16</target>
+                </configuration>
+            </plugin>
+        </plugins>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
-
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-            </plugin>
-        </plugins>
-
     </build>
 
     <repositories>

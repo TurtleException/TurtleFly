@@ -59,6 +59,15 @@ public abstract class PluginModule {
         }
     }
 
+    /**
+     * TODO
+     */
+    public void reloadConfig() {
+        try {
+            CONFIG.load(FILE);
+        } catch (IOException | InvalidConfigurationException ignored) {}
+    }
+
     public YamlConfiguration getConfig() {
         return CONFIG;
     }

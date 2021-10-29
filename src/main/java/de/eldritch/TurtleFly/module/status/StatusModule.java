@@ -4,8 +4,8 @@ import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.bukkit.entity.Player;
 
@@ -42,10 +42,13 @@ public class StatusModule extends PluginModule {
      * @see TimerThread#run()
      */
     public void refresh() {
+        reloadConfig();
         EmbedBuilder builder = new EmbedBuilder();
 
         builder.setTitle("Server Status");
         builder.setDescription("Letztes Update: " + TimeFormat.RELATIVE.now() + ".");
+        builder.setColor(0x2ECC71);
+        builder.setFooter("TurtleFly");
 
         // online players (per world)
         Map<String, Collection<Player>> players = this.getOnlinePlayers();
@@ -64,7 +67,11 @@ public class StatusModule extends PluginModule {
         });
 
 
-        this.updateMessage(builder.build());
+        try {
+            this.updateMessage(builder.build());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -72,38 +79,30 @@ public class StatusModule extends PluginModule {
      * already exist a new one is created.
      * @param embed The new embed version.
      */
-    private void updateMessage(MessageEmbed embed) {
+    private void updateMessage(MessageEmbed embed) throws Exception {
         // check wether API is online
         if (TurtleFly.getPlugin().getDiscordAPI() == null)
             return;
 
-        // try to find the existing message
-        final Message[] message = {null};
         try {
-            // check if a new message has been created in the last refresh
-            if (getConfig().getString("discord.message", "null").equals("latest")) {
-                Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getGuild().getTextChannelById(
-                        getConfig().getString("discord.channel", "null")))
-                        .getHistory().retrievePast(1).map(messages -> messages.get(0)).queue(message1 -> message[0] = message1);
-            }
+            // update message if possible
+            TextChannel channel = Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getGuild().getTextChannelById(
+                    getConfig().getLong("discord.channel")));
 
-            message[0] = Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getGuild().getTextChannelById(
-                    getConfig().getString("discord.channel", "null"))).retrieveMessageById(
-                    getConfig().getString("discord.message", "null")).complete();
-        } catch (NullPointerException ignored) {}
 
-        // create new message if not exists
-        if (message[0] == null) {
+            // this is not a perfect fix, I think...
+            channel.getHistory().retrievePast(1).complete();
+            if (channel.getHistory() == null || channel.getHistory().getMessageById(getConfig().getLong("discord.message")) == null)
+                throw new NullPointerException("Provided channel does not have a history or history does not contain message.");
+
+            channel.editMessageEmbedsById(getConfig().getLong("discord.message"), embed).queue();
+        } catch (NullPointerException e) {
             try {
-                Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getGuild().getTextChannelById(
-                        getConfig().getString("discord.channel", "null"))).sendMessageEmbeds(embed).queue();
-                getConfig().set("discord.message", "latest"); // this is an ugly approach but idk what else to do
+                getConfig().set("discord.message", Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getGuild().getTextChannelById(
+                        getConfig().getLong("discord.channel"))).sendMessageEmbeds(embed).complete().getIdLong());
+                saveConfig();
             } catch (NullPointerException ignored) {}
-            return;
         }
-
-        // update existing message
-        message[0].editMessageEmbeds(embed).queue();
     }
 
 
