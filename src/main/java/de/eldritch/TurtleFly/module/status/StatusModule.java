@@ -3,8 +3,8 @@ package de.eldritch.TurtleFly.module.status;
 import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
+import de.eldritch.TurtleFly.util.Performance;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.utils.TimeFormat;
@@ -12,9 +12,8 @@ import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -22,6 +21,8 @@ import java.util.*;
  * channel that provides some status information on the server.
  */
 public class StatusModule extends PluginModule {
+    private boolean offline = false;
+
     public StatusModule() throws PluginModuleEnableException {
         super();
 
@@ -54,18 +55,18 @@ public class StatusModule extends PluginModule {
         reloadConfig();
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("Server Status")
-                .setDescription("Letztes Update: " + TimeFormat.RELATIVE.now() + ".\n "
+                .setDescription("Letztes Update: " + TimeFormat.RELATIVE.now() + ".\n\n> "
                         + "Der Bot versucht diese Nachricht alle 5 Sekunden zu aktualisieren. "
                         + "Da je nach Auslastung der *Discord API* oder des Servers einige dieser "
                         + "Updates ausfallen könnten ist spätestens nach einer Minute damit zu "
-                        + "rechnen, dass der Server offline ist oder das Plugin nicht funktioniert.")
+                        + "rechnen, dass der Server offline ist oder das Plugin nicht funktioniert.\n ")
                 .setColor(0x2F3136)
                 .setFooter("turtlefly.eldritch.de")
                 .setTimestamp(new Date().toInstant());
 
         // set thumbnail
         try {
-            String url = "http://cdn.eldritch.de/mc/EldritchDiscord/" + TurtleFly.getPlugin().getServer().getName() + ".png";
+            String url = "http://cdn.eldritch.de/mc/EldritchDiscord/" + TurtleFly.getPlugin().getServerName() + ".png";
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestMethod("HEAD");
             if (connection.getResponseCode() != 200) throw new IOException();
@@ -74,35 +75,50 @@ public class StatusModule extends PluginModule {
             builder.setThumbnail("http://cdn.eldritch.de/mc/EldritchDiscord/unknown.png");
         }
 
-        // online players (per world)
-        Map<String, Collection<Player>> players = this.getOnlinePlayers();
-        if (players.isEmpty()) {
-            builder.addField("Spieler", "Keine Spieler online.", true);
+        if (offline) {
+            builder.addField(":red_circle: Offline", "Der Server wurde " + TimeFormat.RELATIVE.now() + " gestoppt.", false);
         } else {
-            players.forEach((world, players1) -> {
-                StringBuilder str = new StringBuilder();
-                players1.forEach(player -> {
-                    try {
-                        str.append(Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI()).getGuild().getEmotesByName(player.getName(), false).get(0).getAsMention());
-                    } catch (NullPointerException | IndexOutOfBoundsException ignored) {
-                        str.append(":question:");
-                    }
-                    str.append(" ").append(player.getDisplayName()).append("\n");
-                });
+            // online players (per world)
+            Map<String, Collection<Player>> players = this.getOnlinePlayers();
+            if (players.isEmpty()) {
+                builder.addField("Spieler", "Keine Spieler online.", true);
+            } else {
+                players.forEach((world, players1) -> {
+                    StringBuilder str = new StringBuilder();
+                    players1.forEach(player -> {
+                        try {
+                            str.append(Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI()).getGuild().getEmotesByName(player.getName(), false).get(0).getAsMention());
+                        } catch (NullPointerException | IndexOutOfBoundsException ignored) {
+                            str.append(":question:");
+                        }
+                        str.append(" ").append(player.getDisplayName()).append("\n");
+                    });
 
-                // check for a custom world name in the config
-                try {
-                    if (Objects.requireNonNull(getConfig().getConfigurationSection("worlds")).contains(world)) {
-                        builder.addField("Spieler | " + Objects.requireNonNull(getConfig().getConfigurationSection("worlds")).get(world), str.toString(), true);
+                    // custom emote
+                    String emote = "";
+                    if (Objects.requireNonNull(getConfig().getConfigurationSection("emotes")).contains(world)) {
+                        emote = (String) Objects.requireNonNull(getConfig().getConfigurationSection("emotes")).get(world) + " ";
                     }
-                } catch (NullPointerException ignored) {
-                    builder.addField("Spieler | " + world, str.toString(), true);
-                }
-            });
+
+                    // check for a custom world name in the config
+                    try {
+                        if (Objects.requireNonNull(getConfig().getConfigurationSection("worlds")).contains(world)) {
+                            builder.addField(emote + "Spieler | " + Objects.requireNonNull(getConfig().getConfigurationSection("worlds")).get(world), str.toString(), true);
+                        }
+                    } catch (NullPointerException ignored) {
+                        builder.addField(emote + "Spieler | " + world, str.toString(), true);
+                    }
+                });
+            }
         }
 
-        builder.addField("Plugin Version", "`" + TurtleFly.getPlugin().getDescription().getVersion() + "`", true);
+        if (!offline) {
+            // server tps
+            builder.addField("Performance", "`" + new DecimalFormat("00.00").format(Performance.getTPS(100)) + "` TPS  (" + Performance.getLagPercent(100) + "% Lag)", false);
+        }
 
+        // plugin version
+        builder.addField("Plugin Version", "`" + TurtleFly.getPlugin().getDescription().getVersion() + "`", false);
 
         this.updateMessage(builder.build());
     }
@@ -130,6 +146,15 @@ public class StatusModule extends PluginModule {
                 saveConfig();
             });
         });
+    }
+
+    /**
+     * Notifies the StatusModule that the {@link org.bukkit.Server}
+     * is going offline to refresh the Discord embed one last time.
+     */
+    public void offlineUpdate() {
+        offline = true;
+        this.refresh();
     }
 
 
