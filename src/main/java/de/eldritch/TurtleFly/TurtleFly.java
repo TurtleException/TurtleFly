@@ -72,6 +72,8 @@ public class TurtleFly extends JavaPlugin {
 
         // save module YAML configs
         moduleManager.getRegisteredModules().forEach(PluginModule::saveConfig);
+
+        discordAPI.getJDA().shutdown();
     }
 
 
