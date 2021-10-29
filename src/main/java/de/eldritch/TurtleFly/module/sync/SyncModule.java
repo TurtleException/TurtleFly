@@ -5,11 +5,8 @@ import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import de.eldritch.TurtleFly.module.sync.listeners.DiscordListener;
 import de.eldritch.TurtleFly.module.sync.listeners.MinecraftListener;
-import org.bukkit.Bukkit;
 
 import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Mirrors the Minecraft chat with Discord and provides custom formatting.
@@ -17,6 +14,9 @@ import java.util.concurrent.ExecutionException;
 public class SyncModule extends PluginModule {
     public SyncModule() throws PluginModuleEnableException {
         super();
+
+        if (TurtleFly.getPlugin().getDiscordAPI() == null)
+            throw new PluginModuleEnableException("Module is dependant on JDA connection.");
 
         try {
             this.registerListeners();

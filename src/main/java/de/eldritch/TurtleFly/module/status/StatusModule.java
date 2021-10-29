@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.bukkit.entity.Player;
 
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 /**
@@ -19,6 +18,9 @@ import java.util.*;
 public class StatusModule extends PluginModule {
     public StatusModule() throws PluginModuleEnableException {
         super();
+
+        if (TurtleFly.getPlugin().getDiscordAPI() == null)
+            throw new PluginModuleEnableException("Module is dependant on JDA connection.");
 
         this.registerListeners();
         this.startThread();
@@ -46,10 +48,10 @@ public class StatusModule extends PluginModule {
         reloadConfig();
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("Server Status")
-                .setDescription("Letztes Update: " + TimeFormat.RELATIVE.now() + ".\n"
-                        + "Der Bot versucht diese Nachricht alle 5 Sekunden zu aktualisieren."
-                        + "Da je nach Auslastung der Discord API oder des Servers einige dieser"
-                        + "Updates ausfallen könnten ist spätestens nach einer Minute damit zu"
+                .setDescription("Letztes Update: " + TimeFormat.RELATIVE.now() + ".\n "
+                        + "Der Bot versucht diese Nachricht alle 5 Sekunden zu aktualisieren. "
+                        + "Da je nach Auslastung der *Discord API* oder des Servers einige dieser "
+                        + "Updates ausfallen könnten ist spätestens nach einer Minute damit zu "
                         + "rechnen, dass der Server offline ist oder das Plugin nicht funktioniert.")
                 .setThumbnail(!TurtleFly.getPlugin().getServer().getName().equals("Unknown Server")
                         ? "http://cdn.eldritch.de/mc/EldritchDiscord/" + TurtleFly.getPlugin().getServer().getName() + ".png"
@@ -61,7 +63,7 @@ public class StatusModule extends PluginModule {
         // online players (per world)
         Map<String, Collection<Player>> players = this.getOnlinePlayers();
         if (players.isEmpty()) {
-            builder.addField("Spieler | ?", "Keine Spieler online.", true);
+            builder.addField("Spieler", "Keine Spieler online.", true);
         } else {
             players.forEach((world, players1) -> {
                 StringBuilder str = new StringBuilder();
