@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 public class MinecraftMessage {
     private String message;
@@ -34,10 +35,15 @@ public class MinecraftMessage {
     public String toDiscord() {
         String emote = "";
         if (TurtleFly.getPlugin().getDiscordAPI() != null) {
-            List<Emote> emotes = TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().getGuild().getEmotesByName("minecraft", true);
-
-            if (!emotes.isEmpty())
-                emote = emotes.get(0).getAsMention() + " ";
+            try {
+                emote = Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI()).getGuild().getEmotesByName(author.getName(), false).get(0).getAsMention() + " ";
+            } catch (NullPointerException | IndexOutOfBoundsException ignored1) {
+                try {
+                    emote = TurtleFly.getPlugin().getDiscordAPI().getGuild().getEmotesByName("minecraft", true).get(0).getAsMention() + " ";
+                } catch (NullPointerException | IndexOutOfBoundsException ignored2) {
+                    emote = "";
+                }
+            }
         }
 
         String str = emote + "__**" + author.getDisplayName() + "**:__  " + message;

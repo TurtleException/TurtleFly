@@ -28,7 +28,7 @@ public class EmoteModule extends PluginModule {
     }
 
     private void registerListeners() {
-        TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), TurtleFly.getPlugin());
+        TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new PlayerJoinListener(), TurtleFly.getPlugin());
     }
 
     /**

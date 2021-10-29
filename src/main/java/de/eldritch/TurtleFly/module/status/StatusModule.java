@@ -4,6 +4,7 @@ import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.utils.TimeFormat;
@@ -67,7 +68,14 @@ public class StatusModule extends PluginModule {
         } else {
             players.forEach((world, players1) -> {
                 StringBuilder str = new StringBuilder();
-                players1.forEach(player -> str.append(player.getDisplayName()).append("\n"));
+                players1.forEach(player -> {
+                    try {
+                        str.append(Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI()).getGuild().getEmotesByName(player.getName(), false).get(0).getAsMention());
+                    } catch (NullPointerException | IndexOutOfBoundsException ignored) {
+                        str.append(":question:");
+                    }
+                    str.append(" ").append(player.getDisplayName()).append("\n");
+                });
 
                 // check for a custom world name in the config
                 try {
