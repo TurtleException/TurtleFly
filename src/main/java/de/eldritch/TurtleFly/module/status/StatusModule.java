@@ -67,11 +67,7 @@ public class StatusModule extends PluginModule {
         });
 
 
-        try {
-            this.updateMessage(builder.build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.updateMessage(builder.build());
     }
 
     /**
@@ -79,30 +75,24 @@ public class StatusModule extends PluginModule {
      * already exist a new one is created.
      * @param embed The new embed version.
      */
-    private void updateMessage(MessageEmbed embed) throws Exception {
+    private void updateMessage(MessageEmbed embed) {
         // check wether API is online
-        if (TurtleFly.getPlugin().getDiscordAPI() == null)
+        if (TurtleFly.getPlugin().getDiscordAPI() == null || TurtleFly.getPlugin().getDiscordAPI().getGuild() == null)
             return;
 
-        try {
-            // update message if possible
-            TextChannel channel = Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getGuild().getTextChannelById(
-                    getConfig().getLong("discord.channel")));
+        TextChannel channel = TurtleFly.getPlugin().getDiscordAPI().getGuild().getTextChannelById(getConfig().getLong("discord.channel"));
+        if (channel == null) return;
 
-
-            // this is not a perfect fix, I think...
-            channel.getHistory().retrievePast(1).complete();
-            if (channel.getHistory() == null || channel.getHistory().getMessageById(getConfig().getLong("discord.message")) == null)
-                throw new NullPointerException("Provided channel does not have a history or history does not contain message.");
-
-            channel.editMessageEmbedsById(getConfig().getLong("discord.message"), embed).queue();
-        } catch (NullPointerException e) {
-            try {
-                getConfig().set("discord.message", Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getGuild().getTextChannelById(
-                        getConfig().getLong("discord.channel"))).sendMessageEmbeds(embed).complete().getIdLong());
+        channel.retrieveMessageById(getConfig().getLong("discord.message")).queue((message) -> {
+            message.editMessageEmbeds(embed).queue();
+        }, (failure) -> {
+            // see https://stackoverflow.com/a/59805069 for further information on how to proceed here
+            channel.sendMessageEmbeds(embed).queue(message -> {
+                // save new message id
+                getConfig().set("discord.message", message.getIdLong());
                 saveConfig();
-            } catch (NullPointerException ignored) {}
-        }
+            });
+        });
     }
 
 
