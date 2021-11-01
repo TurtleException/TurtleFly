@@ -4,6 +4,7 @@ import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import de.eldritch.TurtleFly.module.sync.listeners.DiscordListener;
+import de.eldritch.TurtleFly.module.sync.listeners.MinecraftJoinListener;
 import de.eldritch.TurtleFly.module.sync.listeners.MinecraftListener;
 
 import java.util.Objects;
@@ -28,6 +29,7 @@ public class SyncModule extends PluginModule {
     private void registerListeners() throws NullPointerException {
         // minecraft listener
         TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new MinecraftListener(this), TurtleFly.getPlugin());
+        TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new MinecraftJoinListener(), TurtleFly.getPlugin());
 
         // discord listener
         Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI()).getJDA().addEventListener(new DiscordListener(this));

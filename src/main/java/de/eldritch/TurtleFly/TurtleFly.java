@@ -6,6 +6,12 @@ import de.eldritch.TurtleFly.module.ModuleManager;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.status.StatusModule;
 import de.eldritch.TurtleFly.util.Performance;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,5 +103,25 @@ public class TurtleFly extends JavaPlugin {
      */
     public String getServerName() {
         return serverName;
+    }
+
+    /**
+     * @return Default plugin chat prefix.
+     */
+    public static TextComponent getChatPrefix() {
+        ComponentBuilder builder = new ComponentBuilder();
+        builder.color(net.md_5.bungee.api.ChatColor.DARK_GRAY)
+                .append("[")
+                .color(net.md_5.bungee.api.ChatColor.GREEN)
+                .append("SERVER")
+                .color(net.md_5.bungee.api.ChatColor.DARK_GRAY)
+                .append("] ")
+                .color(net.md_5.bungee.api.ChatColor.GRAY)
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        new Text(ChatColor.GREEN + "TurtleFly"),
+                        new Text(ChatColor.ITALIC.toString() + ChatColor.GRAY + "v" + getPlugin().getDescription().getVersion())
+                ));
+
+        return new TextComponent(builder.create());
     }
 }
