@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Stack;
 import java.util.logging.Level;
 
 public class TurtleFly extends JavaPlugin {
@@ -110,18 +109,18 @@ public class TurtleFly extends JavaPlugin {
      */
     public static TextComponent getChatPrefix() {
         ComponentBuilder builder = new ComponentBuilder();
-        builder.color(net.md_5.bungee.api.ChatColor.DARK_GRAY)
-                .append("[")
-                .color(net.md_5.bungee.api.ChatColor.GREEN)
-                .append("SERVER")
+        builder.append("[")
                 .color(net.md_5.bungee.api.ChatColor.DARK_GRAY)
+                .append("SERVER")
+                .color(net.md_5.bungee.api.ChatColor.GREEN)
                 .append("] ")
-                .color(net.md_5.bungee.api.ChatColor.GRAY)
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        new Text(ChatColor.GREEN + "TurtleFly"),
-                        new Text(ChatColor.ITALIC.toString() + ChatColor.GRAY + "v" + getPlugin().getDescription().getVersion())
-                ));
+                .color(net.md_5.bungee.api.ChatColor.DARK_GRAY);
 
-        return new TextComponent(builder.create());
+        TextComponent component = new TextComponent(builder.create());
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                new Text(ChatColor.GREEN + "TurtleFly\n" + ChatColor.ITALIC.toString() + ChatColor.GRAY.toString() + "v" + getPlugin().getDescription().getVersion())
+        ));
+
+        return new TextComponent(component);
     }
 }

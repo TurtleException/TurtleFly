@@ -4,15 +4,11 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.AnvilGui;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
-import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import de.eldritch.TurtleFly.TurtleFly;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.block.Skull;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -30,7 +26,7 @@ public class ClickGUIHandler {
     private final ClickModule MODULE;
 
 
-    private TreeMap<String, Particle> particleMap = new TreeMap<>(Map.ofEntries(
+    private final TreeMap<String, Particle> particleMap = new TreeMap<>(Map.ofEntries(
             Map.entry("Herzen", Particle.HEART),
             Map.entry("Musik", Particle.NOTE),
             Map.entry("Wütender Villager", Particle.VILLAGER_ANGRY)
@@ -65,16 +61,16 @@ public class ClickGUIHandler {
         OutlinePane pane = new OutlinePane(0, 0, 9, gui.getRows());
 
         // default
-        pane.addItem(new GuiItem(new ItemStack(this.getDefaultSkull()), event -> generateParticleGui(player, null)));
+        pane.addItem(new GuiItem(new ItemStack(this.getDefaultItem()), event -> generateParticleGui(player, null)));
 
         // players
         this.getWhitelistSkulls(player).forEach(
                 skull -> pane.addItem(new GuiItem(skull, inventoryClickEvent -> this.generateMessageGui(player, ((SkullMeta) skull.getItemMeta()).getOwningPlayer())))
         );
 
-        gui.addPane(new StaticPane(0, 0, 9, gui.getRows()));
-        gui.update();
+        gui.addPane(pane);
         gui.show(player);
+        gui.update();
     }
 
     private void generateMessageGui(@NotNull Player player, @Nullable OfflinePlayer target) {
@@ -83,15 +79,15 @@ public class ClickGUIHandler {
         MODULE.reloadConfig();
         Particle particle = MODULE.getConfig().getObject(player.getUniqueId() + "." + (target == null ? "default" : target.getUniqueId()) + ".particle", Particle.class, ClickModule.getDefaultParticle());
 
-        gui.getFirstItemComponent().setItem(new GuiItem(target == null ? getDefaultSkull() : getSkull(target),
+        gui.getFirstItemComponent().setItem(new GuiItem(target == null ? getDefaultItem() : getSkull(target),
                 inventoryClickEvent -> this.generateTargetGui(player)), 0, 0);
         gui.getSecondItemComponent().setItem(new GuiItem(new ItemStack(Material.NETHER_STAR, 1),
                 inventoryClickEvent -> this.generateParticleGui(player, target)), 0, 0);
         gui.getResultComponent().setItem(new GuiItem(new ItemStack(Material.GREEN_STAINED_GLASS_PANE, 1),
                 inventoryClickEvent -> this.saveMessage(player, target, ((AnvilGui) inventoryClickEvent.getClickedInventory()).getRenameText())), 0, 0);
 
-        gui.update();
         gui.show(player);
+        gui.update();
     }
 
     private void generateParticleGui(@NotNull Player player, @Nullable OfflinePlayer target) {
@@ -109,8 +105,8 @@ public class ClickGUIHandler {
             ItemMeta  meta = item.getItemMeta();
 
             if (meta != null) {
-                meta.setDisplayName(str);
-                meta.setLore(Collections.singletonList(ChatColor.YELLOW + item.getType().getKey().getKey()));
+                meta.setDisplayName(ChatColor.YELLOW + str);
+                meta.setLore(Collections.singletonList(ChatColor.ITALIC.toString() + ChatColor.DARK_GRAY.toString() + particle.name()));
             }
 
             item.setItemMeta(meta);
@@ -140,8 +136,10 @@ public class ClickGUIHandler {
                 inventoryClickEvent -> this.generateExtendedParticleGui(player, target)), 4, 0);
 
         gui.addPane(pane);
-        gui.update();
+        gui.addPane(splitterPane);
+        gui.addPane(footerPane);
         gui.show(player);
+        gui.update();
     }
 
     private void generateExtendedParticleGui(@NotNull Player player, @Nullable OfflinePlayer target) {
@@ -162,22 +160,21 @@ public class ClickGUIHandler {
         MODULE.getConfig().set(player.getUniqueId() + "." + targetID + ".message", msg);
         MODULE.saveConfig();
 
-        ComponentBuilder builder = new ComponentBuilder();
-        player.spigot().sendMessage(builder.append(TurtleFly.getChatPrefix())
-                .append(target == null ? "Neue Standard-Einstellungen gespeichert." : ("Neue Einstellungen für " + target.getName() + " gespeichert."))
-                .create()
+        ComponentBuilder builder = new ComponentBuilder(TurtleFly.getChatPrefix());
+        player.spigot().sendMessage(
+                builder.append(target == null ? "Neue Standard-Einstellungen gespeichert." : ("Neue Einstellungen für " + target.getName() + " gespeichert."))
+                        .color(net.md_5.bungee.api.ChatColor.GRAY).create()
         );
     }
 
 
-    private ItemStack getDefaultSkull() {
-        ItemStack item = new ItemStack(Material.LEGACY_SKULL_ITEM, 1);
-        SkullMeta meta = (SkullMeta) item.getItemMeta();
+    private ItemStack getDefaultItem() {
+        ItemStack item = new ItemStack(Material.DIRT, 1);
+        ItemMeta  meta = item.getItemMeta();
 
         if (meta != null) {
-            meta.setOwner("MHF_Question");
+            meta.setDisplayName(ChatColor.YELLOW + "Default");
             meta.setLore(List.of(
-                    ChatColor.YELLOW + "Default",
                     ChatColor.GRAY + "Standard-Einstellung für alle Spieler,",
                     ChatColor.GRAY + "denen nichts eigenes zugewiesen wird."));
             item.setItemMeta(meta);
@@ -200,12 +197,12 @@ public class ClickGUIHandler {
      * Provides the {@link Skull} of an {@link OfflinePlayer}.
      */
     private ItemStack getSkull(OfflinePlayer skullOwner) {
-        ItemStack item = new ItemStack(Material.LEGACY_SKULL_ITEM, 1);
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
 
         if (meta != null) {
             meta.setOwningPlayer(skullOwner);
-            meta.setLore(List.of(ChatColor.GOLD + (skullOwner.getName() != null ? skullOwner.getName() : "Unknown Player")));
+            meta.setDisplayName(ChatColor.GOLD + (skullOwner.getName() != null ? skullOwner.getName() : "Unknown Player"));
             item.setItemMeta(meta);
         }
 
