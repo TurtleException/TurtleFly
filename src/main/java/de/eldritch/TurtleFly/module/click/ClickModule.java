@@ -36,7 +36,8 @@ public class ClickModule extends PluginModule {
         TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void onEvent(PlayerInteractEntityEvent event) {
-                if (event.getPlayer().getInventory().getItem(event.getHand()).getType().isAir()) {
+                if (event.getPlayer().getInventory().getItem(event.getHand()).getType().isAir()
+                        && event.getRightClicked() instanceof Player) {
                     onClick(event.getPlayer(), event.getRightClicked());
                 }
             }
