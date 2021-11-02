@@ -65,7 +65,7 @@ public class ClickGUIHandler {
 
         // players
         this.getWhitelistSkulls(player).forEach(
-                skull -> pane.addItem(new GuiItem(skull, inventoryClickEvent -> this.generateMessageGui(player, ((SkullMeta) skull.getItemMeta()).getOwningPlayer())))
+                skull -> pane.addItem(new GuiItem(skull, inventoryClickEvent -> this.generateParticleGui(player, ((SkullMeta) skull.getItemMeta()).getOwningPlayer())))
         );
 
         gui.addPane(pane);
@@ -73,6 +73,9 @@ public class ClickGUIHandler {
         gui.update();
     }
 
+    /**
+     * @implNote Temporarily deactivated.
+     */
     private void generateMessageGui(@NotNull Player player, @Nullable OfflinePlayer target) {
         AnvilGui gui = new AnvilGui(target == null ? "Standard-Nachricht" : "Nachricht für " + target.getName());
 
@@ -115,7 +118,14 @@ public class ClickGUIHandler {
                 MODULE.getConfig().set(player.getUniqueId() + "." + targetID + ".particle", item.getType().name());
                 MODULE.saveConfig();
 
-                this.generateMessageGui(player, target);
+                player.closeInventory();
+
+                // send message
+                ComponentBuilder builder = new ComponentBuilder(TurtleFly.getChatPrefix());
+                player.spigot().sendMessage(
+                        builder.append(target == null ? "Neue Standard-Einstellungen gespeichert." : ("Neue Einstellungen für " + target.getName() + " gespeichert."))
+                                .color(net.md_5.bungee.api.ChatColor.GRAY).create()
+                );
             }));
         });
 
