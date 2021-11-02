@@ -98,7 +98,7 @@ public class ClickGUIHandler {
 
         Particle current = MODULE.getConfig().getObject(player.getUniqueId() + "." + targetID + ".particle", Particle.class);
 
-        ChestGui gui = new ChestGui((particleMap.size() / 9) + 1 + 2, target == null ? "Standard-Partikel" : "Partikel für " + target.getName());
+        ChestGui gui = new ChestGui(((particleMap.size() + 1) / 9) + 1, target == null ? "Standard-Partikel" : "Partikel für " + target.getName());
 
         // main particles
         OutlinePane pane = new OutlinePane(0, 0, 9, gui.getRows() - 2);
@@ -129,12 +129,8 @@ public class ClickGUIHandler {
             }));
         });
 
-        // spacer
-        StaticPane splitterPane = new StaticPane(0, gui.getRows() - 2, 9, 1, Pane.Priority.LOW);
-        splitterPane.fillWith(new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1));
-
         // extended particle selection
-        StaticPane footerPane = new StaticPane(0, gui.getRows() - 1, 9, 1);
+        StaticPane footerPane = new StaticPane(8, gui.getRows() - 1, 1, 1);
         ItemStack extendedSelector = new ItemStack(Material.CHEST);
         ItemMeta  meta = extendedSelector.getItemMeta();
         if (meta != null) {
@@ -143,10 +139,9 @@ public class ClickGUIHandler {
         }
         extendedSelector.setItemMeta(meta);
         footerPane.addItem(new GuiItem(new ItemStack(Material.CHEST),
-                inventoryClickEvent -> this.generateExtendedParticleGui(player, target)), 4, 0);
+                inventoryClickEvent -> this.generateExtendedParticleGui(player, target)), 0, 0);
 
         gui.addPane(pane);
-        gui.addPane(splitterPane);
         gui.addPane(footerPane);
         gui.show(player);
         gui.update();
