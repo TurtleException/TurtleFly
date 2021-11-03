@@ -4,7 +4,6 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.AnvilGui;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
-import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import de.eldritch.TurtleFly.TurtleFly;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -29,7 +28,11 @@ public class ClickGUIHandler {
     private final TreeMap<String, Particle> particleMap = new TreeMap<>(Map.ofEntries(
             Map.entry("Herzen", Particle.HEART),
             Map.entry("Musik", Particle.NOTE),
-            Map.entry("Wütender Villager", Particle.VILLAGER_ANGRY)
+            Map.entry("Wütender Villager", Particle.VILLAGER_ANGRY),
+            Map.entry("Hexe", Particle.SPELL_WITCH),
+            Map.entry("Glühen", Particle.GLOW),
+            Map.entry("Portal", Particle.PORTAL),
+            Map.entry("Wachs", Particle.WAX_ON)
     ));
 
 
@@ -58,6 +61,8 @@ public class ClickGUIHandler {
      */
     private void generateTargetGui(@NotNull Player player) {
         ChestGui gui = new ChestGui((TurtleFly.getPlugin().getServer().getWhitelistedPlayers().size() / 9) + 1, "Ziel");
+        gui.setOnGlobalClick(event -> event.setCancelled(true));
+
         OutlinePane pane = new OutlinePane(0, 0, 9, gui.getRows());
 
         // default
@@ -78,6 +83,7 @@ public class ClickGUIHandler {
      */
     private void generateMessageGui(@NotNull Player player, @Nullable OfflinePlayer target) {
         AnvilGui gui = new AnvilGui(target == null ? "Standard-Nachricht" : "Nachricht für " + target.getName());
+        gui.setOnGlobalClick(event -> event.setCancelled(true));
 
         MODULE.reloadConfig();
         Particle particle = MODULE.getConfig().getObject(player.getUniqueId() + "." + (target == null ? "default" : target.getUniqueId()) + ".particle", Particle.class, ClickModule.getDefaultParticle());
@@ -96,15 +102,16 @@ public class ClickGUIHandler {
     private void generateParticleGui(@NotNull Player player, @Nullable OfflinePlayer target) {
         String targetID = target == null ? "default" : target.getUniqueId().toString();
 
-        Particle current = MODULE.getConfig().getObject(player.getUniqueId() + "." + targetID + ".particle", Particle.class);
+        String current = MODULE.getConfig().getString(player.getUniqueId() + "." + targetID + ".particle", "null");
 
         ChestGui gui = new ChestGui(((particleMap.size() + 1) / 9) + 1, target == null ? "Standard-Partikel" : "Partikel für " + target.getName());
+        gui.setOnGlobalClick(event -> event.setCancelled(true));
 
         // main particles
-        OutlinePane pane = new OutlinePane(0, 0, 9, gui.getRows() - 2);
+        OutlinePane pane = new OutlinePane(0, 0, 9, gui.getRows());
 
         particleMap.forEach((str, particle) -> {
-            ItemStack item = new ItemStack(particle.equals(current) ? Material.ENDER_EYE : Material.ENDER_PEARL, 1);
+            ItemStack item = new ItemStack(particle.name().equals(current) ? Material.ENDER_EYE : Material.ENDER_PEARL, 1);
             ItemMeta  meta = item.getItemMeta();
 
             if (meta != null) {
@@ -115,7 +122,7 @@ public class ClickGUIHandler {
             item.setItemMeta(meta);
             pane.addItem(new GuiItem(item, inventoryClickEvent -> {
                 MODULE.reloadConfig();
-                MODULE.getConfig().set(player.getUniqueId() + "." + targetID + ".particle", item.getType().name());
+                MODULE.getConfig().set(player.getUniqueId() + "." + targetID + ".particle", particle.name());
                 MODULE.saveConfig();
 
                 player.closeInventory();

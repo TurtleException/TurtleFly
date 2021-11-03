@@ -57,7 +57,7 @@ public class ClickModule extends PluginModule {
         reloadConfig();
 
         String message = getConfig().getString(source.getUniqueId() + "." + target.getUniqueId() + ".message", getConfig().getString(source.getUniqueId() + ".default.message", null));
-        Particle particle = getConfig().getObject(source.getUniqueId() + "." + target.getUniqueId() + ".particle", Particle.class, getConfig().getObject(source.getUniqueId() + ".default.particle", Particle.class, getDefaultParticle()));
+        Particle particle = Particle.valueOf(getConfig().getString(source.getUniqueId() + "." + target.getUniqueId() + ".particle", getConfig().getString(source.getUniqueId() + ".default.particle", getDefaultParticle().name())));
 
         if (message != null && target instanceof Player)
             ((Player) target).spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.YELLOW + message));

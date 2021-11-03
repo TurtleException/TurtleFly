@@ -13,3 +13,6 @@ commands:
   click:
     description: Ändert die Partikel für einen bestimmten Spieler oder die Standard-Einstellung für Spieler, die keine zugewiesenen Partikel haben.
     usage: /click
+  update:
+    description: Ersetzt das Plugin durch eine neuere Version, falls eine entsprechende Datei vorhanden ist.
+    usage: /update

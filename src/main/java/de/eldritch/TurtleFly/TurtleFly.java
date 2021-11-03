@@ -5,9 +5,10 @@ import de.eldritch.TurtleFly.discord.DiscordConnectionException;
 import de.eldritch.TurtleFly.module.ModuleManager;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.status.StatusModule;
+import de.eldritch.TurtleFly.util.IllegalVersionException;
 import de.eldritch.TurtleFly.util.Performance;
+import de.eldritch.TurtleFly.util.Version;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -122,5 +123,14 @@ public class TurtleFly extends JavaPlugin {
         ));
 
         return new TextComponent(component);
+    }
+
+    public Version getVersion() {
+        try {
+            return Version.parse(this.getDescription().getVersion());
+        } catch (IllegalVersionException e) {
+            getLogger().warning("Unable to parse Version from String provided via plugin.yml!");
+            return null;
+        }
     }
 }
