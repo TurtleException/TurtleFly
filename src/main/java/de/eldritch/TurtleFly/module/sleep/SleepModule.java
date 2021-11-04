@@ -25,16 +25,23 @@ public class SleepModule extends PluginModule {
     }
 
     /**
-     * Recalculates the current amount of players needed to pass a night.
+     * Recalculates the current amount of {@link Player}s needed to pass a night.
+     * <p>
+     *     If enough players are sleeping the night will be skipped.
+     * </p>
      */
     public void refresh() {
         if ((sleepingPlayers.size() >= (world.getPlayers().size() + 1) / 2) && (world.getTime() > 12000)) {
-            int taskId = TurtleFly.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(TurtleFly.getPlugin(), () -> {
-                if ((sleepingPlayers.size() >= (world.getPlayers().size() + 1) / 2)) {
-                    if (world.getTime() > 12000) {
-                        world.setFullTime(world.getTime() + 150L);
-                    } else {
-                        sleepingPlayers.clear();
+            final int[] i = {0};
+            final long[] tickValues = this.getTickValues(world.getTime(), 24000L, 80L);
+            int taskId = TurtleFly.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(TurtleFly.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    if ((sleepingPlayers.size() >= (world.getPlayers().size() + 1) / 2)) {
+                        if (tickValues.length > i[0]) {
+                            world.setFullTime(tickValues[i[0]]);
+                            i[0]++;
+                        }
                     }
                 }
             }, 0L, 1L);
@@ -44,5 +51,21 @@ public class SleepModule extends PluginModule {
 
             TurtleFly.getPlugin().getLogger().info("Skipped a night (at least 1/2 of all players were sleeping).");
         }
+    }
+
+    /**
+     * Provides an array of tick values for a smooth transistion
+     * between two specified tick values.
+     * @param from The time from wich the array should start.
+     * @param to The time at wich the array should stop
+     * @param ticks The amount of ticks for the transition.
+     * @return An array of length ticks + 1 with time values between from and to.
+     */
+    private long[] getTickValues(long from, long to, long ticks) {
+        long diff = to - from;
+        long[] arr = new long[(int) ticks + 1];
+        for (int i = 0; i <= ticks; i++)
+            arr[i] = (long) (((Math.sin(3D * ((double) i / (double) ticks) - 0.5D * Math.PI) + 1D) / 2D) * diff + from);
+        return arr;
     }
 }
