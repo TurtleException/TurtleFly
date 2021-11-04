@@ -35,10 +35,8 @@ public class ModuleManager {
         /*  !!! KEEP THIS PART UPDATED !!!  */
         modClasses.put(ChatModule.class, new Object[]{});
         modClasses.put(ClickModule.class, new Object[]{});
-        modClasses.put(CompassModule.class, new Object[]{});
         modClasses.put(EmoteModule.class, new Object[]{});
         modClasses.put(HelmetModule.class, new Object[]{});
-        modClasses.put(PetsModule.class, new Object[]{});
         modClasses.put(SleepModule.class, new Object[]{});
         modClasses.put(StatusModule.class, new Object[]{});
         modClasses.put(SyncModule.class, new Object[]{});

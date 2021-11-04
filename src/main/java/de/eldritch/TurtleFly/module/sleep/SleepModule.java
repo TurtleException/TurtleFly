@@ -3,8 +3,10 @@ package de.eldritch.TurtleFly.module.sleep;
 import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
+import de.eldritch.TurtleFly.util.Runnable;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 
@@ -33,21 +35,30 @@ public class SleepModule extends PluginModule {
     public void refresh() {
         if ((sleepingPlayers.size() >= (world.getPlayers().size() + 1) / 2) && (world.getTime() > 12000)) {
             final int[] i = {0};
-            final long[] tickValues = this.getTickValues(world.getTime(), 24000L, 80L);
-            int taskId = TurtleFly.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(TurtleFly.getPlugin(), new Runnable() {
+            final long[] tickValues = this.getTickValues(world.getTime(), 24000L, this.getTickAmount(world.getTime()));
+
+            Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    if ((sleepingPlayers.size() >= (world.getPlayers().size() + 1) / 2)) {
+                    if ((sleepingPlayers.size() >= (world.getPlayers().size() + 1) / 2) && (world.getTime() > 12000)) {
                         if (tickValues.length > i[0]) {
                             world.setFullTime(tickValues[i[0]]);
                             i[0]++;
+                        } else {
+                            cancel();
                         }
+                    } else {
+                        cancel();
                     }
                 }
-            }, 0L, 1L);
+            };
 
+            int taskId = TurtleFly.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(TurtleFly.getPlugin(), runnable, 0L, 1L);
+            runnable.setId(taskId);
+
+            // maximum time a runnable should be able to run
             TurtleFly.getPlugin().getServer().getScheduler().runTaskLaterAsynchronously(TurtleFly.getPlugin(),
-                    () -> TurtleFly.getPlugin().getServer().getScheduler().cancelTask(taskId), 100L);
+                    () -> TurtleFly.getPlugin().getServer().getScheduler().cancelTask(taskId), 600L);
 
             TurtleFly.getPlugin().getLogger().info("Skipped a night (at least 1/2 of all players were sleeping).");
         }
@@ -67,5 +78,13 @@ public class SleepModule extends PluginModule {
         for (int i = 0; i <= ticks; i++)
             arr[i] = (long) (((Math.sin(3D * ((double) i / (double) ticks) - 0.5D * Math.PI) + 1D) / 2D) * diff + from);
         return arr;
+    }
+
+    private long getTickAmount(long worldTime) {
+        if (worldTime < 16000)
+            return getConfig().getLong("ticks.evening", 180L);
+        if (worldTime < 20000)
+            return getConfig().getLong("ticks.midnight", 120L);
+        return getConfig().getLong("ticks.monring", 60L);
     }
 }

@@ -6,6 +6,7 @@ import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import de.eldritch.TurtleFly.module.sync.listeners.DiscordListener;
 import de.eldritch.TurtleFly.module.sync.listeners.MinecraftJoinListener;
 import de.eldritch.TurtleFly.module.sync.listeners.MinecraftListener;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.Objects;
 
@@ -51,7 +52,7 @@ public class SyncModule extends PluginModule {
             if (msg.getReplyTarget() != null) {
                 try {
                     // get target message and create replay
-                    Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().retrieveMessageById(msg.getReplyTarget())).complete().reply(msg.toDiscord()).queue();
+                    Objects.requireNonNull(this.getTextChannel().retrieveMessageById(msg.getReplyTarget())).complete().reply(msg.toDiscord()).queue();
                     return; // prevent the message from being sent seperately
                 } catch (NullPointerException e) {
                     TurtleFly.getPlugin().getLogger().warning("Unable to send discord message '" + msg.toDiscord() + "' as reply.");
@@ -59,9 +60,13 @@ public class SyncModule extends PluginModule {
                 }
             }
 
-            TurtleFly.getPlugin().getDiscordAPI().getMainTextChannel().sendMessage(msg.toDiscord()).queue();
+            this.getTextChannel().sendMessage(msg.toDiscord()).queue();
         } else {
             TurtleFly.getPlugin().getLogger().warning("Unable to send Discord message '" + msg.toDiscord() + "'.");
         }
+    }
+
+    private TextChannel getTextChannel() {
+        return Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI()).getGuild().getTextChannelById(getConfig().getString("discord.textChannel", "null"));
     }
 }

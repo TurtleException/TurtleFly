@@ -32,6 +32,7 @@ public class SleepEventsListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        event.getPlayer().setSleepingIgnored(true);
         MODULE.refresh();
     }
 

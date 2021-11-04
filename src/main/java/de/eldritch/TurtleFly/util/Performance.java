@@ -4,7 +4,7 @@ package de.eldritch.TurtleFly.util;
  * https://bukkit.org/threads/get-server-tps.143410/
  * @author LazyLemons
  */
-public class Performance implements Runnable {
+public class Performance implements java.lang.Runnable {
     public static int TICK_COUNT = 0;
     public static long[] TICKS = new long[600];
     public static long LAST_TICK = 0L;
