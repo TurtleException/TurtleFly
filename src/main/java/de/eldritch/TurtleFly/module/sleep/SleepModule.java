@@ -28,9 +28,19 @@ public class SleepModule extends PluginModule {
      * Recalculates the current amount of players needed to pass a night.
      */
     public void refresh() {
-        if ((sleepingPlayers.size() >= (world.getPlayers().size() + 1) / 2) && (world.getTime() < 12000)) {
-            world.setFullTime(1000);
-            sleepingPlayers.clear();
+        if ((sleepingPlayers.size() >= (world.getPlayers().size() + 1) / 2) && (world.getTime() > 12000)) {
+            int taskId = TurtleFly.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(TurtleFly.getPlugin(), () -> {
+                if ((sleepingPlayers.size() >= (world.getPlayers().size() + 1) / 2)) {
+                    if (world.getTime() > 12000) {
+                        world.setFullTime(world.getTime() + 150L);
+                    } else {
+                        sleepingPlayers.clear();
+                    }
+                }
+            }, 0L, 1L);
+
+            TurtleFly.getPlugin().getServer().getScheduler().runTaskLaterAsynchronously(TurtleFly.getPlugin(),
+                    () -> TurtleFly.getPlugin().getServer().getScheduler().cancelTask(taskId), 100L);
 
             TurtleFly.getPlugin().getLogger().info("Skipped a night (at least 1/2 of all players were sleeping).");
         }
