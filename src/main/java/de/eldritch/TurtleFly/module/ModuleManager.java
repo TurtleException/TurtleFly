@@ -4,6 +4,7 @@ import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.chat.ChatModule;
 import de.eldritch.TurtleFly.module.compass.CompassModule;
 import de.eldritch.TurtleFly.module.emote.EmoteModule;
+import de.eldritch.TurtleFly.module.language.LanguageModule;
 import de.eldritch.TurtleFly.module.sleep.SleepModule;
 import de.eldritch.TurtleFly.module.status.StatusModule;
 import de.eldritch.TurtleFly.module.sync.SyncModule;
@@ -37,6 +38,7 @@ public class ModuleManager {
         modClasses.put(ClickModule.class, new Object[]{});
         modClasses.put(EmoteModule.class, new Object[]{});
         modClasses.put(HelmetModule.class, new Object[]{});
+        modClasses.put(LanguageModule.class, new Object[]{});
         modClasses.put(SleepModule.class, new Object[]{});
         modClasses.put(StatusModule.class, new Object[]{});
         modClasses.put(SyncModule.class, new Object[]{});
