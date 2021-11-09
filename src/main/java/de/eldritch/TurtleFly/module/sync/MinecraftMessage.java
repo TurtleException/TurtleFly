@@ -1,11 +1,9 @@
 package de.eldritch.TurtleFly.module.sync;
 
 import de.eldritch.TurtleFly.TurtleFly;
-import net.dv8tion.jda.api.entities.Emote;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
 
 public class MinecraftMessage {

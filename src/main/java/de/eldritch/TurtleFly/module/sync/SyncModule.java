@@ -4,8 +4,10 @@ import de.eldritch.TurtleFly.TurtleFly;
 import de.eldritch.TurtleFly.module.PluginModule;
 import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import de.eldritch.TurtleFly.module.sync.listeners.DiscordListener;
+import de.eldritch.TurtleFly.module.sync.listeners.MinecraftEventListener;
 import de.eldritch.TurtleFly.module.sync.listeners.MinecraftJoinListener;
 import de.eldritch.TurtleFly.module.sync.listeners.MinecraftListener;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.Objects;
@@ -29,6 +31,7 @@ public class SyncModule extends PluginModule {
 
     private void registerListeners() throws NullPointerException {
         // minecraft listener
+        TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new MinecraftEventListener(this), TurtleFly.getPlugin());
         TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new MinecraftListener(this), TurtleFly.getPlugin());
         TurtleFly.getPlugin().getServer().getPluginManager().registerEvents(new MinecraftJoinListener(), TurtleFly.getPlugin());
 
@@ -66,7 +69,19 @@ public class SyncModule extends PluginModule {
         }
     }
 
+    public void sendEmbed(MessageEmbed embed) {
+        if (TurtleFly.getPlugin().getDiscordAPI() != null) {
+            this.getTextChannel().sendMessageEmbeds(embed).queue();
+        } else {
+            TurtleFly.getPlugin().getLogger().warning("Unable to send Discord event message. (" + embed + ")");
+        }
+    }
+
     private TextChannel getTextChannel() {
         return Objects.requireNonNull(TurtleFly.getPlugin().getDiscordAPI()).getGuild().getTextChannelById(getConfig().getString("discord.textChannel", "null"));
+    }
+
+    public static String getBustUrl(String name) {
+        return "https://minotar.net/armor/bust/" + name;
     }
 }
