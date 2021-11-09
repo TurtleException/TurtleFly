@@ -6,7 +6,6 @@ import de.eldritch.TurtleFly.module.PluginModuleEnableException;
 import de.eldritch.TurtleFly.util.Runnable;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 
@@ -37,10 +36,12 @@ public class SleepModule extends PluginModule {
             final int[] i = {0};
             final long[] tickValues = this.getTickValues(world.getTime(), 24000L, this.getTickAmount(world.getTime()));
 
+            sleepingPlayers.forEach(player -> player.wakeup(true));
+
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    if ((sleepingPlayers.size() >= (world.getPlayers().size() + 1) / 2) && (world.getTime() > 12000)) {
+                    if ((world.getTime() > 12000)) {
                         if (tickValues.length > i[0]) {
                             world.setFullTime(tickValues[i[0]]);
                             i[0]++;
